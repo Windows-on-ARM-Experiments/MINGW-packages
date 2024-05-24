@@ -80,11 +80,17 @@ build() {
       ;;
   esac
 
+  unset CC
+  unset CXX
+
   MSYS2_ARG_CONV_EXCL="--prefix=" \
   /usr/bin/perl ../"${_realname}-${pkgver}"/Configure \
     --prefix="${MINGW_PREFIX}" \
+    --cross-compile-prefix=${CARCH}-w64-mingw32- \
     --libdir=lib \
     --openssldir=etc/ssl \
+    --with-zlib-include=/opt/${MINGW_CHOST}/include \
+    --with-zlib-lib=${MINGW_CHOST}/lib \
     ${_mingw} \
     shared \
     zlib-dynamic \
