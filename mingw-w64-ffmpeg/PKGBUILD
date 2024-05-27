@@ -126,6 +126,7 @@ build() {
     --disable-debug
     --disable-stripping
     --disable-doc
+    --enable-cross-compile
     --enable-dxva2
     --enable-d3d11va
     --enable-fontconfig
