@@ -19,12 +19,10 @@ msys2_references=(
 license=('spdx:BSD-3-Clause')
 depends=("${MINGW_PACKAGE_PREFIX}-gcc-libs"
          "${MINGW_PACKAGE_PREFIX}-libwinpthread"
-         $([[ ${MINGW_PACKAGE_PREFIX} == *-clang-* ]] || echo "${MINGW_PACKAGE_PREFIX}-gcc-libgfortran")
          "${MINGW_PACKAGE_PREFIX}-omp")
 makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
-             "${MINGW_PACKAGE_PREFIX}-cmake"
-             "${MINGW_PACKAGE_PREFIX}-ninja"
-             $([[ ${MINGW_PACKAGE_PREFIX} == *-clang-* ]] || echo "${MINGW_PACKAGE_PREFIX}-fc")
+             "cmake"
+             "ninja"
              "dos2unix")
 options=('!buildflags')
 source=(https://github.com/OpenMathLib/OpenBLAS/releases/download/v${pkgver}/${_realname}-${pkgver}.tar.gz
@@ -68,6 +66,9 @@ _build_openblas() {
     _extra_config+=("-DC_LAPACK=ON")
   fi
 
+  # GCC 14 treats incompatible pointers as errors
+  export CFLAGS="${CFLAGS} -Wno-incompatible-pointer-types"
+
   if [[ ${CARCH} == aarch64 ]]; then
     # Clang wasn't able to compile all the kernels inside the arm64 folder,
     # Enable only the cores known to run Windows on ARM
@@ -77,19 +78,22 @@ _build_openblas() {
   fi
 
   MSYS2_ARG_CONV_EXCL="-DCMAKE_INSTALL_PREFIX=" \
-  ${MINGW_PREFIX}/bin/cmake \
+  /usr/bin/cmake \
     -G"Ninja" \
+    -DCMAKE_SYSTEM_NAME=Windows \
+    -DCMAKE_SYSTEM_PROCESSOR=${CARCH} \
     -DCMAKE_INSTALL_PREFIX=${MINGW_PREFIX} \
+    -DCMAKE_MAKE_PROGRAM=/usr/bin/ninja \
+    -DCMAKE_CROSSCOMPILING=ON \
     -DBUILD_SHARED_LIBS=ON \
     -DBUILD_STATIC_LIBS=ON \
     -DUSE_THREAD=ON \
     -DNUM_THREADS=64 \
-    -DUSE_OPENMP=ON \
     "${_extra_config[@]}" \
     ${_idx_opt} \
     ../${_realname}-${pkgver}
 
-  ${MINGW_PREFIX}/bin/cmake --build .
+  /usr/bin/cmake --build .
 }
 
 build() {
@@ -121,7 +125,7 @@ package_openblas() {
 
   cd "${srcdir}"/build-${MSYSTEM}-32
 
-  DESTDIR=${pkgdir} ${MINGW_PREFIX}/bin/cmake --install .
+  DESTDIR=${pkgdir} /usr/bin/cmake --install .
 
   # Install License
   install -Dm0644 "${srcdir}"/${_realname}-${pkgver}/LICENSE "${pkgdir}"${MINGW_PREFIX}/share/licenses/${_realname}/LICENSE
@@ -136,7 +140,7 @@ package_openblas64() {
 
   cd "${srcdir}"/build-${MSYSTEM}-64
 
-  DESTDIR=${pkgdir} ${MINGW_PREFIX}/bin/cmake --install .
+  DESTDIR=${pkgdir} /usr/bin/cmake --install .
 
   # Install License
   install -Dm0644 "${srcdir}"/${_realname}-${pkgver}/LICENSE "${pkgdir}"${MINGW_PREFIX}/share/licenses/${_realname}64/LICENSE
