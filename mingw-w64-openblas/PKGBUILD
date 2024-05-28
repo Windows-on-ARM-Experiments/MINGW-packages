@@ -19,10 +19,9 @@ msys2_references=(
 license=('spdx:BSD-3-Clause')
 depends=("${MINGW_PACKAGE_PREFIX}-gcc-libs"
          "${MINGW_PACKAGE_PREFIX}-libwinpthread"
-         $([[ ${MINGW_PACKAGE_PREFIX} == *-clang-* ]] || echo "${MINGW_PACKAGE_PREFIX}-gcc-libgfortran")
          "${MINGW_PACKAGE_PREFIX}-omp")
 makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
-             "${MINGW_PACKAGE_PREFIX}-cmake"
+             "mingw-w64-x86_64-cmake"
              "${MINGW_PACKAGE_PREFIX}-ninja"
              "${MINGW_PACKAGE_PREFIX}-fc"
              "dos2unix")
@@ -67,6 +66,9 @@ _build_openblas() {
     _extra_config+=("-DCMAKE_BUILD_TYPE=Debug")
   fi
 
+  # GCC 14 treats incompatible pointers as errors
+  export CFLAGS="${CFLAGS} -Wno-incompatible-pointer-types"
+
   if [[ ${CARCH} == aarch64 ]]; then
     # Clang wasn't able to compile all the kernels inside the arm64 folder,
     # Enable only the cores known to build on Windows on ARM
@@ -76,7 +78,7 @@ _build_openblas() {
   fi
 
   MSYS2_ARG_CONV_EXCL="-DCMAKE_INSTALL_PREFIX=" \
-  ${MINGW_PREFIX}/bin/cmake \
+  /mingw64/bin/cmake \
     -G"Ninja" \
     -DCMAKE_INSTALL_PREFIX=${MINGW_PREFIX} \
     -DBUILD_SHARED_LIBS=ON \
@@ -84,12 +86,11 @@ _build_openblas() {
     -DBUILD_TESTING=OFF \
     -DUSE_THREAD=ON \
     -DNUM_THREADS=64 \
-    -DUSE_OPENMP=ON \
     "${_extra_config[@]}" \
     ${_idx_opt} \
     ../${_realname}-${pkgver}
 
-  ${MINGW_PREFIX}/bin/cmake --build .
+  /mingw64/bin/cmake --build .
 }
 
 build() {
@@ -125,7 +126,7 @@ package_openblas() {
 
   cd "${srcdir}"/build-${MSYSTEM}-32
 
-  DESTDIR="${pkgdir}" ${MINGW_PREFIX}/bin/cmake --install .
+  DESTDIR="${pkgdir}" /mingw64/bin/cmake --install .
 
   local PREFIX_WIN=$(cygpath -wm ${MINGW_PREFIX})
   for _f in "${pkgdir}${MINGW_PREFIX}"/lib/cmake/OpenBLAS/*.cmake; do
@@ -145,7 +146,7 @@ package_openblas64() {
 
   cd "${srcdir}"/build-${MSYSTEM}-64
 
-  DESTDIR="${pkgdir}" ${MINGW_PREFIX}/bin/cmake --install .
+  DESTDIR="${pkgdir}" /mingw64/bin/cmake --install .
 
   local PREFIX_WIN=$(cygpath -wm ${MINGW_PREFIX})
   for _f in "${pkgdir}${MINGW_PREFIX}"/lib/cmake/OpenBLAS64/*.cmake; do
