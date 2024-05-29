@@ -121,9 +121,6 @@ build() {
     --enable-dxva2
     --enable-d3d11va
     --enable-d3d12va
-    --enable-frei0r
-    --enable-gmp
-    --enable-gnutls
     --enable-gpl
     --enable-iconv
     --enable-libaom
@@ -182,10 +179,7 @@ build() {
   fi
 
   if [[ "${MINGW_PACKAGE_PREFIX}" != *clang-aarch64* ]]; then
-    common_config+=(
-        --enable-amf
-        --enable-nvenc
-    )
+    common_config+=()
   fi
 
   for _variant in -static -shared; do
@@ -203,6 +197,7 @@ build() {
       --arch=${CARCH%%-*} \
       --cc=${CC} \
       --cxx=${CXX} \
+      --nm=${NM} \
       "${common_config[@]}" \
       --logfile=config.log \
       ${ENABLE_VARIANT}
