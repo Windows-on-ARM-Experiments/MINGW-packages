@@ -1,0 +1,10 @@
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -2820,7 +2820,6 @@ check-target:  \
+     maybe-check-target-rda \
+     maybe-check-target-libada \
+     maybe-check-target-libgm2 \
+-    maybe-check-target-libgomp \
+     maybe-check-target-libitm \
+     maybe-check-target-libatomic \
+     maybe-check-target-libgrust

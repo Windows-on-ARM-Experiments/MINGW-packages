@@ -20,9 +20,9 @@ index 2fbf2e6fa69..f950ba56edc 100644
 +	if test x$native_system_header_dir = x ; then
 +		native_system_header_dir=/mingw/include
 +	fi
- 	target_gtfiles="$target_gtfiles \$(srcdir)/config/i386/winnt.cc"
- 	extra_options="${extra_options} i386/cygming.opt i386/mingw.opt"
- 	case ${target} in
+ 	target_gtfiles="$target_gtfiles \$(srcdir)/config/mingw/winnt.cc"
+ 	target_gtfiles="$target_gtfiles \$(srcdir)/config/mingw/winnt-dll.cc"
+ 	extra_options="${extra_options} mingw/cygming.opt mingw/mingw.opt"
 -- 
 2.38.1
 

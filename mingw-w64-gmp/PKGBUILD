@@ -7,13 +7,13 @@ pkgver=6.3.0
 pkgrel=2
 pkgdesc="A free library for arbitrary precision arithmetic (mingw-w64)"
 arch=('any')
-mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clang32' 'clangarm64')
+mingw_arch=('mingw32' 'mingw64' 'mingwarm64' 'ucrt64' 'clang64' 'clang32' 'clangarm64')
 url="https://gmplib.org/"
 msys2_references=(
   "cpe: cpe:/a:gmplib:gmp"
 )
 license=('LGPL3' 'GPL')
-makedepends=("${MINGW_PACKAGE_PREFIX}-autotools" "${MINGW_PACKAGE_PREFIX}-cc")
+makedepends=("mingw-w64-x86_64-autotools" "${MINGW_PACKAGE_PREFIX}-cc")
 source=(https://ftp.gnu.org/gnu/gmp/${_realname}-${pkgver}.tar.xz{,.sig}
         do-not-use-dllimport.diff
         gmp-staticlib.diff)
@@ -30,7 +30,7 @@ prepare() {
   cp config.{guess,sub} ../stash
   patch -p2 -i ${srcdir}/do-not-use-dllimport.diff
   patch -p1 -i ${srcdir}/gmp-staticlib.diff
-  autoreconf -fiv
+  autoreconf -fiv -I /mingw64/share/aclocal
   cp -f ../stash/config.{guess,sub} .
 }
 
@@ -52,7 +52,6 @@ build() {
   ../${_realname}-${pkgver}/configure \
     --build=${MINGW_CHOST} \
     --prefix=${MINGW_PREFIX} \
-    --enable-cxx \
     "${extra_config[@]}" \
     --enable-static \
     --disable-shared
@@ -63,7 +62,6 @@ build() {
   ../${_realname}-${pkgver}/configure \
     --build=${MINGW_CHOST} \
     --prefix=${MINGW_PREFIX} \
-    --enable-cxx \
     "${extra_config[@]}" \
     --disable-static \
     --enable-shared

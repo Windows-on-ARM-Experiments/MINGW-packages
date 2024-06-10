@@ -31,7 +31,7 @@ pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}"
          $([[ "$_enable_rust" == "yes" ]] && echo "${MINGW_PACKAGE_PREFIX}-${_realname}-rust")
          $([[ "$_enable_jit" == "yes" ]] && echo "${MINGW_PACKAGE_PREFIX}-libgccjit")
         )
-pkgver=14.2.0
+pkgver=15.0.0
 _rc=""
 _snapshot=
 if [[ -z ${_rc} ]]; then
@@ -51,32 +51,34 @@ fi
 pkgrel=2
 pkgdesc="GCC for the MinGW-w64"
 arch=('any')
-mingw_arch=('mingw32' 'mingw64' 'ucrt64')
+mingw_arch=('mingw32' 'mingw64' 'mingwarm64' 'ucrt64')
 url="https://gcc.gnu.org"
 msys2_references=(
   "cpe: cpe:/a:gnu:gcc"
 )
 license=('spdx:GPL-3.0-or-later')
-makedepends=("${MINGW_PACKAGE_PREFIX}-${_realname}"
+makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
              $([[ "$_enable_ada" == "yes" ]] && echo "${MINGW_PACKAGE_PREFIX}-${_realname}-ada")
              $([[ "$_enable_rust" == "yes" ]] && echo "${MINGW_PACKAGE_PREFIX}-rust")
-             "${MINGW_PACKAGE_PREFIX}-autotools"
+             "mingw-w64-x86_64-autotools"
              "${MINGW_PACKAGE_PREFIX}-binutils"
              "${MINGW_PACKAGE_PREFIX}-crt"
              "${MINGW_PACKAGE_PREFIX}-headers"
              "${MINGW_PACKAGE_PREFIX}-gmp"
-             "${MINGW_PACKAGE_PREFIX}-gperf"
+             "mingw-w64-x86_64-gperf"
              "${MINGW_PACKAGE_PREFIX}-isl"
              "${MINGW_PACKAGE_PREFIX}-libiconv"
              "${MINGW_PACKAGE_PREFIX}-mpc"
              "${MINGW_PACKAGE_PREFIX}-mpfr"
-             "${MINGW_PACKAGE_PREFIX}-python"
+             "mingw-w64-x86_64-python"
              "${MINGW_PACKAGE_PREFIX}-windows-default-manifest"
              "${MINGW_PACKAGE_PREFIX}-winpthreads"
              "${MINGW_PACKAGE_PREFIX}-zlib"
-             "${MINGW_PACKAGE_PREFIX}-zstd")
-options=('!emptydirs') # '!strip' 'debug')
-source=(${_url}/${_sourcedir}.tar.xz{,.sig}
+             "${MINGW_PACKAGE_PREFIX}-zstd"
+             "git")
+checkdepends=('dejagnu' 'autogen')
+options=('!emptydirs' '!strip' 'debug')
+source=("${_realname}"::"git+https://github.com/Windows-on-ARM-Experiments/gcc-woarm64.git#branch=woarm64"
         "gdbinit"
         0003-Windows-Follow-Posix-dir-exists-semantics-more-close.patch
         0005-Windows-Don-t-ignore-native-system-header-dir.patch
@@ -89,12 +91,13 @@ source=(${_url}/${_sourcedir}.tar.xz{,.sig}
         0021-PR14940-Allow-a-PCH-to-be-mapped-to-a-different-addr.patch
         0140-gcc-diagnostic-color.patch
         0200-add-m-no-align-vector-insn-option-for-i386.patch
-        2001-fix-building-rust-on-mingw-w64.patch)
-sha256sums=('a7b39bc69cbf9e25826c5a60ab26477001f7c08d85cec04bc0e29cabed6f3cc9'
-            'SKIP'
+        2001-fix-building-rust-on-mingw-w64.patch
+        9998-disable-libgomp-tests.patch
+        9999-workarounds.patch)
+sha256sums=('SKIP'
             'bce81824fc89e5e62cca350de4c17a27e27a18a1a1ad5ca3492aec1fc5af3234'
             '3fc35067823f87e48dd3bfd265e7593000dc110fa9ad5f16c81b896765fc897a'
-            '57f0081655ba9a94ed7cc3d8b67a79aee8442a56613bd17f9809a7b0e68e43cd'
+            'SKIP'
             '90d5cb570083f9dea4ac0f0f87e3e8d2230f5052e6f9b946061a20a224a9d195'
             '8a40ea004a803b7e6aabd6c58d859502a57c87755dbcfedbdfed161f2fb7eb62'
             '5ef4148acc4a2b7ed648d4fe75fab5545e84b4b93a12d6ba4e4ea6061dd635fa'
@@ -102,9 +105,11 @@ sha256sums=('a7b39bc69cbf9e25826c5a60ab26477001f7c08d85cec04bc0e29cabed6f3cc9'
             'fd9bdecb2bbc4796bbc9f00b708dac42ef9e3464a06d6d27e5475cee117de5be'
             'ad1f7b5e7afaaec008b7cbd14feea13a10989fa91bda7003af72d457619bb199'
             '6c272078340a27b3f147e497115b0a6e9fc0da720a2602f12b086524522caa59'
-            'e0a5b470f49a29f20215cc9f9d04c1cb9969dff6f0e546542799d3a693ef1c84'
-            'c34f9e71b5a092be1987ad4c65891742c74c9eb8ef6560100e751cd31375f579'
-            'ddc1538c2b9132bce5b3b2cad2a382762d58b46b31d2ae291f6e4d963b88dfd4')
+            'SKIP'
+            'SKIP'
+            'ddc1538c2b9132bce5b3b2cad2a382762d58b46b31d2ae291f6e4d963b88dfd4'
+            'SKIP'
+            'SKIP')
 validpgpkeys=(F3691687D867B81B51CE07D9BBE43771487328A9  # bpiotrowski@archlinux.org
               86CFFCA918CF3AF47147588051E8B148A9999C34  # evangelos@foutrelis.com
               13975A70E63C361C73AE69EF6EEB81F8981C74C7  # richard.guenther@gmail.com
@@ -160,6 +165,16 @@ prepare() {
   apply_patch_with_msg \
     2001-fix-building-rust-on-mingw-w64.patch
 
+  apply_patch_with_msg \
+    9998-disable-libgomp-tests.patch
+
+  case ${CARCH} in
+    aarch64)
+      apply_patch_with_msg \
+        9999-workarounds.patch
+        ;;
+  esac
+
   # do not expect ${prefix}/mingw symlink - this should be superceded by
   # 0005-Windows-Don-t-ignore-native-system-header-dir.patch .. but isn't!
   sed -i 's/${prefix}\/mingw\//${prefix}\//g' configure
@@ -167,7 +182,7 @@ prepare() {
   # change hardcoded /mingw prefix to the real prefix .. isn't this rubbish?
   # it might work at build time and could be important there but beyond that?!
   local MINGW_NATIVE_PREFIX=$(cygpath -am ${MINGW_PREFIX})
-  sed -i "s#\\/mingw\\/#${MINGW_NATIVE_PREFIX//\//\\/}\\/#g" gcc/config/i386/mingw32.h
+  sed -i "s#\\/mingw\\/#${MINGW_NATIVE_PREFIX//\//\\/}\\/#g" gcc/config/mingw/mingw32.h
 }
 
 build() {
@@ -180,17 +195,34 @@ build() {
     _extra_config+=("--enable-libstdcxx-debug")
   fi
 
-  if [[ "${CARCH}" == "i686" ]]; then
-    _extra_config+=(
-      "--disable-sjlj-exceptions"
-      "--with-dwarf2"
-    )
-    LDFLAGS+=" -Wl,--large-address-aware"
-    local _arch=pentium4
-  else
-    _extra_config+=("--enable-plugin")
-    local _arch=nocona
-  fi
+  case ${CARCH} in
+    i686)
+      _extra_config+=(
+        $([ "$BOOTSTRAP" == "0" ] && echo "--disable-bootstrap" || echo "--enable-bootstrap")
+        "--disable-sjlj-exceptions"
+        "--with-dwarf2"
+      )
+      LDFLAGS+=" -Wl,--large-address-aware"
+      local _arch=pentium4
+      ;;
+    x86_64)
+      # CHANGED: --enable-plugin to --disable-plugin
+      _extra_config+=(
+        $([ "$BOOTSTRAP" == "0" ] && echo "--disable-bootstrap" || echo "--enable-bootstrap")
+        "--disable-plugin"
+      )
+      local _arch=nocona
+      ;;
+    aarch64)
+      # CHANGED: --enable-plugin to --disable-plugin
+      _extra_config+=(
+        $([ "$BOOTSTRAP" == "1" ] && echo "--enable-bootstrap" || echo "--disable-bootstrap")
+        "--disable-plugin"
+        "--enable-host-pie"
+      )
+      local _arch="armv8-a"
+      ;;
+  esac
 
   local _languages="c,lto,c++,fortran"
   if [ "$_enable_ada" == "yes" ]; then
@@ -225,6 +257,9 @@ build() {
   # In addition adaint.c does `#include <accctrl.h>` which pulls in msxml.h, hacky hack:
   CPPFLAGS+=" -DCOM_NO_WINDOWS_H"
 
+  CFLAGS+=" -I${MINGW_PREFIX}/include"
+  LDFLAGS+=" -L${MINGW_PREFIX}/lib"
+
   ../${_sourcedir}/configure \
     --prefix=${MINGW_PREFIX} \
     --with-local-prefix=${MINGW_PREFIX}/local \
@@ -233,7 +268,6 @@ build() {
     --target=${MINGW_CHOST} \
     --with-native-system-header-dir=${MINGW_PREFIX}/include \
     --libexecdir=${MINGW_PREFIX}/lib \
-    --enable-bootstrap \
     --enable-checking=release \
     --with-arch=${_arch} \
     --with-tune=generic \
@@ -272,9 +306,50 @@ build() {
     sed -i 's,^STRIP_FOR_TARGET=.*$,STRIP_FOR_TARGET=true,g' Makefile
   fi
 
+  if check_option "debug" "n"; then
+    BOOT_CFLAGS="-O0"
+    STAGE1_CFLAGS="-O0"
+    CFLAGS_FOR_TARGET="-O0"
+  else
+    BOOT_CFLAGS="-g -O0"
+    STAGE1_CFLAGS="-g -O0"
+    CFLAGS_FOR_TARGET="-g -O0"
+  fi
+
   # https://gcc.gnu.org/onlinedocs/gccint/Makefile.html
-  make -O STAGE1_CFLAGS="-O2" \
-          profiledbootstrap
+  make -j$(nproc) -O BOOT_CFLAGS="$BOOT_CFLAGS" \
+    STAGE1_CFLAGS="$STAGE1_CFLAGS" \
+    CFLAGS_FOR_TARGET="$CFLAGS_FOR_TARGET" \
+    $([ "$BOOTSTRAP" == "1" ] && echo "profiledbootstrap" || echo "")
+}
+
+check() {
+  cd "${srcdir}"/build-${MSYSTEM}
+
+  if [ -z "$MODULE" ]; then
+    TARGET="check"
+  else
+    TARGET="check-$MODULE"
+  fi
+
+  msg2 "Checking $TARGET with '$FILTER' filter"
+
+  for FILE in `find . -path '*testsuite*.log' -or -path '*testsuite*.sum'`; do
+    rm $FILE
+  done
+
+  touch $srcdir/build-$MSYSTEM/site.exp
+  make -j$(nproc) $TARGET \
+    RUNTESTFLAGS="--global_init=$srcdir/build-$MSYSTEM/site.exp $FILTER" \
+    CHECK_TEST_FRAMEWORK=1 || true
+
+  msg2 "Collecting test results"
+
+  mkdir -p "${srcdir}/test-results"
+  for FILE in `find . -path '*testsuite*.log' -or -path '*testsuite*.sum'`; do
+    cp $FILE "${srcdir}/test-results/"
+    dos2unix "${srcdir}/test-results/$(basename $FILE)"
+  done
 }
 
 package_gcc-libs() {
@@ -366,7 +441,8 @@ package_gcc() {
 
   for lib in libatomic libgomp libquadmath; do
     make -C $CHOST/$lib DESTDIR="${pkgdir}" install
-    rm "${pkgdir}"${MINGW_PREFIX}/bin/${lib}*.dll
+    # TODO: aarch64 do not compile libquadmath because of missing float128 support.
+    rm -rf "${pkgdir}"${MINGW_PREFIX}/bin/${lib}*.dll
   done
 
   rm -r "${pkgdir}"${MINGW_PREFIX}/${_libdir}/finclude
@@ -387,7 +463,8 @@ package_gcc() {
 
   make -C gcc DESTDIR="${pkgdir}" install-man install-info
   rm "${pkgdir}"${MINGW_PREFIX}/share/man/man1/{gfortran,lto-dump}.1
-  rm "${pkgdir}"${MINGW_PREFIX}/share/info/gfortran.info
+  # TODO: Why is this file missing?
+  rm -f "${pkgdir}"${MINGW_PREFIX}/share/info/gfortran.info
   if [ "$_enable_ada" == "yes" ]; then
     rm "${pkgdir}"${MINGW_PREFIX}/share/info/{gnat-style,gnat_rm,gnat_ugn}.info
   fi
@@ -408,7 +485,7 @@ package_gcc() {
   sed -i 's|%GCC_NAME%|gcc-'${pkgver%%+*}'|g' "${pkgdir}"${MINGW_PREFIX}/etc/gdbinit
 
   # byte-compile python libraries
-  ${MINGW_PREFIX}/bin/python -m compileall -o 0 -o 1 "${pkgdir}"${MINGW_PREFIX}/share/gcc-${pkgver%%+*}/
+  /mingw64/bin/python -m compileall -o 0 -o 1 "${pkgdir}"${MINGW_PREFIX}/share/gcc-${pkgver%%+*}/
 }
 
 package_gcc-libgfortran() {

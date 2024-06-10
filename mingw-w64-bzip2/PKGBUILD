@@ -8,14 +8,14 @@ pkgver=1.0.8
 pkgrel=3
 pkgdesc="A high-quality data compression program (mingw-w64)"
 arch=('any')
-mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clang32' 'clangarm64')
+mingw_arch=('mingw32' 'mingw64' 'mingwarm64' 'ucrt64' 'clang64' 'clang32' 'clangarm64')
 url="https://sourceware.org/bzip2/"
 msys2_references=(
   "cpe: cpe:/a:bzip:bzip2"
 )
 license=("custom")
 depends=("${MINGW_PACKAGE_PREFIX}-gcc-libs")
-makedepends=("${MINGW_PACKAGE_PREFIX}-cc" "${MINGW_PACKAGE_PREFIX}-autotools")
+makedepends=("${MINGW_PACKAGE_PREFIX}-cc" "mingw-w64-x86_64-autotools")
 options=('strip' 'staticlibs')
 source=("https://sourceware.org/pub/bzip2/bzip2-${pkgver}.tar.gz"
         "bzip2-cygming-1.0.6.src.all.patch"
@@ -40,7 +40,7 @@ prepare() {
   patch -p1 -i "$srcdir/"bzip2-buildsystem.all.patch
   patch -p1 -i "$srcdir/"bzip2-1.0.6-progress.all.patch
 
-  autoreconf -fi
+  autoreconf -fi -I /mingw64/share/aclocal
 }
 
 build() {

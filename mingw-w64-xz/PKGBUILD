@@ -8,7 +8,7 @@ pkgver=5.6.3
 pkgrel=2
 pkgdesc="Library and command line tools for XZ and LZMA compressed files (mingw-w64)"
 arch=('any')
-mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clang32' 'clangarm64')
+mingw_arch=('mingw32' 'mingw64' 'mingwarm64' 'ucrt64' 'clang64' 'clang32' 'clangarm64')
 url="https://tukaani.org/xz"
 msys2_repository_url="https://github.com/tukaani-project/xz/"
 msys2_references=(
@@ -18,11 +18,11 @@ msys2_references=(
 # TODO: check situation with getopt_long mentioned in COPYING for possible
 # removal of LGPL from this field
 license=('spdx:0BSD AND LGPL-2.1-or-later AND GPL-2.0-or-later')
-depends=("${MINGW_PACKAGE_PREFIX}-gettext-runtime")
+depends=()
 makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
-             "${MINGW_PACKAGE_PREFIX}-autotools"
-             "${MINGW_PACKAGE_PREFIX}-gettext-tools"
-             "${MINGW_PACKAGE_PREFIX}-doxygen"
+             "mingw-w64-x86_64-autotools"
+             "mingw-w64-x86_64-gettext-tools"
+             "mingw-w64-x86_64-doxygen"
              "po4a")
 source=("https://github.com/tukaani-project/xz/releases/download/v${pkgver}/xz-${pkgver}.tar.xz"{,.sig})
 sha256sums=('db0590629b6f0fa36e74aea5f9731dc6f8df068ce7b7bafa45301832a5eebc3a'
