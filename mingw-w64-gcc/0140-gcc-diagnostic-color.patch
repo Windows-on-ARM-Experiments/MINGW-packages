@@ -2,21 +2,34 @@ diff --git a/gcc/diagnostic-color.cc b/gcc/diagnostic-color.cc
 index 640adfad5..f5eaf142a 100644
 --- a/gcc/diagnostic-color.cc
 +++ b/gcc/diagnostic-color.cc
-@@ -211,9 +211,38 @@ should_colorize (void)
-   HANDLE h;
-   DWORD m;
+@@ -211,21 +211,39 @@ should_colorize (void)
+   DWORD mode;
+   BOOL isconsole = false;
  
 +  bool ret = false;
-   h = GetStdHandle (STD_ERROR_HANDLE);
--  return (h != INVALID_HANDLE_VALUE) && (h != NULL)
-+  ret = (h != INVALID_HANDLE_VALUE) && (h != NULL)
- 	  && GetConsoleMode (h, &m);
+   handle = GetStdHandle (STD_ERROR_HANDLE);
+ 
+-  if ((handle != INVALID_HANDLE_VALUE) && (handle != NULL))
+-    isconsole = GetConsoleMode (handle, &mode);
+-
+-#ifdef ENABLE_VIRTUAL_TERMINAL_PROCESSING
+-  if (isconsole)
+-    {
+-      /* Try to enable processing of VT100 escape sequences */
+-      mode |= ENABLE_PROCESSED_OUTPUT | ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+-      SetConsoleMode (handle, mode);
+-    }
+-#endif
+-
+-  return isconsole;
++  ret = (handle != INVALID_HANDLE_VALUE) && (handle != NULL)
++	  && GetConsoleMode (handle, &mode);
 +
 +  if (!ret)
 +    {
 +      ULONG size = sizeof (FILE_NAME_INFO) + (MAX_PATH * sizeof (wchar_t));
 +      FILE_NAME_INFO *fni = (FILE_NAME_INFO*) xmalloc (size);
-+      if (GetFileInformationByHandleEx (h, FileNameInfo, fni, size))
++      if (GetFileInformationByHandleEx (handle, FileNameInfo, fni, size))
 +        {
 +          wchar_t name_msys[] = L"\\msys";
 +          size_t len_msys = sizeof (name_msys) - sizeof (wchar_t);
