@@ -7,20 +7,22 @@ pkgver=6.3.0
 pkgrel=2
 pkgdesc="A free library for arbitrary precision arithmetic (mingw-w64)"
 arch=('any')
-mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clangarm64')
+mingw_arch=('mingw32' 'mingw64' 'mingwarm64' 'ucrt64' 'clang64' 'clangarm64')
 url="https://gmplib.org/"
 msys2_references=(
   "cpe: cpe:/a:gmplib:gmp"
 )
 license=('LGPL3' 'GPL')
-makedepends=("${MINGW_PACKAGE_PREFIX}-autotools" "${MINGW_PACKAGE_PREFIX}-cc")
+makedepends=("mingw-w64-x86_64-autotools" "${MINGW_PACKAGE_PREFIX}-cc")
 source=(https://ftp.gnu.org/gnu/gmp/${_realname}-${pkgver}.tar.xz{,.sig}
         do-not-use-dllimport.diff
-        gmp-staticlib.diff)
+        gmp-staticlib.diff
+        9999-workarounds.patch)
 sha256sums=('a3c2b80201b89e68616f4ad30bc66aee4927c3ce50e33929ca819d5c43538898'
             'SKIP'
             '385ab704f82c47f3aecc9141f43c96e7b8de2bf0e654dc457ce0f1a039db2c68'
-            '7c3cde2634baa2cb1c31404bbfed2d8d7ba33556971ac842a08f2e87667849ab')
+            '7c3cde2634baa2cb1c31404bbfed2d8d7ba33556971ac842a08f2e87667849ab'
+            'SKIP')
 validpgpkeys=('343C2FF0FBEE5EC2EDBEF399F3599FF828C67298') # Niels Möller <nisse@lysator.liu.se>"
 
 prepare() {
@@ -30,7 +32,8 @@ prepare() {
   cp config.{guess,sub} ../stash
   patch -p2 -i "${srcdir}"/do-not-use-dllimport.diff
   patch -p1 -i "${srcdir}"/gmp-staticlib.diff
-  autoreconf -fiv
+  patch -p1 -i "${srcdir}"/9999-workarounds.patch
+  PATH="/mingw64/bin:$PATH" autoreconf -fiv -I /mingw64/share/aclocal
   cp -f ../stash/config.{guess,sub} .
 }
 

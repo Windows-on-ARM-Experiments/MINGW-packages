@@ -1,0 +1,144 @@
+--- a/gcc/config.gcc
++++ b/gcc/config.gcc
+@@ -1273,7 +1273,22 @@ aarch64-*-mingw*)
+ 	tm_file="${tm_file} aarch64/aarch64-abi-ms.h"
+ 	tm_file="${tm_file} aarch64/aarch64-coff.h"
+ 	tm_file="${tm_file} aarch64/cygming.h"
++	if test x$enable_threads = xposix ; then
++	  tm_file="${tm_file} i386/mingw-pthread.h"
++	fi
++	if test x$enable_threads = xmcf ; then
++	  tm_file="${tm_file} i386/mingw-mcfgthread.h"
++	fi
+ 	tm_file="${tm_file} mingw/mingw32.h"
++	case ${target} in
++	  *-w64-*)
++	    user_headers_inc_next_post="${user_headers_inc_next_post} float.h"
++	    user_headers_inc_next_pre="${user_headers_inc_next_pre} stddef.h stdarg.h"
++	    tm_file="${tm_file} i386/mingw-w64.h"
++	    ;;
++	  *)
++	    ;;
++	esac
+ 	tm_file="${tm_file} mingw/mingw-stdint.h"
+ 	tm_file="${tm_file} mingw/winnt.h"
+ 	tm_file="${tm_file} mingw/winnt-dll.h"
+@@ -1288,6 +1303,7 @@ aarch64-*-mingw*)
+ 	target_has_targetdm="yes"
+ 	tmake_file="${tmake_file} t-winnt mingw/t-cygming t-slibgcc"
+ 	aarch64_multilibs="llp64"
++	default_use_cxa_atexit=yes
+ 	case ${enable_threads} in
+ 	  "" | yes | win32)
+ 	    thread_file='win32'
+@@ -1297,8 +1327,13 @@ aarch64-*-mingw*)
+ 	    thread_file='posix'
+ 	    ;;
+ 	esac
+-	default_use_cxa_atexit=yes
+-	user_headers_inc_next_post="${user_headers_inc_next_post} float.h"
++	case ${target} in
++	  *mingw32crt*)
++	    tm_file="${tm_file} i386/crtdll.h"
++	    ;;
++	  *mingw32msv* | *mingw*)
++	    ;;
++	esac
+ 	tm_defines="${tm_defines} TARGET_AARCH64_MS_ABI=1"
+ 	TM_MULTILIB_CONFIG="${TM_MULTILIB_CONFIG},llp64"
+ 	TM_MULTILIB_CONFIG=`echo $TM_MULTILIB_CONFIG | sed 's/^,//'`
+
+--- a/gcc/config/i386/mingw-w64.h
++++ b/gcc/config/i386/mingw-w64.h
+@@ -93,7 +93,11 @@ along with GCC; see the file COPYING3.  If not see
+ 
+ #undef SUB_LINK_SPEC
+ #undef SUB_LINK_ENTRY
+-#define SUB_LINK_SPEC "%{" SPEC_64 ":-m i386pep} %{" SPEC_32 ":-m i386pe}"
++#if defined (__aarch64__)
++  #define SUB_LINK_SPEC "%{" SPEC_64 ":-m aarch64pep} %{" SPEC_32 ":-m aarch64pe}"
++#else
++  #define SUB_LINK_SPEC "%{" SPEC_64 ":-m i386pep} %{" SPEC_32 ":-m i386pe}"
++#endif
+ #define SUB_LINK_ENTRY "%{" SPEC_64 ":" SUB_LINK_ENTRY64 "} %{" SPEC_32 ":" SUB_LINK_ENTRY32 "}"
+ 
+ #undef MULTILIB_DEFAULTS
+--- a/gcc/configure
++++ b/gcc/configure
+@@ -6515,6 +6515,11 @@ cat >>confdefs.h <<_ACEOF
+ #define SIZEOF_VOID_P $ac_cv_sizeof_void_p
+ _ACEOF
+ 
++ac_ext=c
++ac_cpp='$CPP $CPPFLAGS'
++ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
++ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
++ac_compiler_gnu=$ac_cv_c_compiler_gnu
+ 
+ # The cast to long int works around a bug in the HP C Compiler
+ # version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
+@@ -6548,7 +6553,6 @@ cat >>confdefs.h <<_ACEOF
+ #define SIZEOF_SHORT $ac_cv_sizeof_short
+ _ACEOF
+ 
+-
+ # The cast to long int works around a bug in the HP C Compiler
+ # version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
+ # declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
+@@ -6999,6 +7003,12 @@ if test x"$ac_cv_c_uint64_t" = x"no" -o x"$ac_cv_c_int64_t" = x"no"; then
+   as_fn_error $? "uint64_t or int64_t not found" "$LINENO" 5
+ fi
+ 
++ac_ext=cpp
++ac_cpp='$CXXCPP $CPPFLAGS'
++ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
++ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
++ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
++
+ # check what underlying integer type int64_t uses
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking for int64_t underlying type" >&5
+ $as_echo_n "checking for int64_t underlying type... " >&6; }
+--- a/gcc/diagnostic-global-context.cc
++++ b/gcc/diagnostic-global-context.cc
+@@ -29,7 +29,7 @@ along with GCC; see the file COPYING3.  If not see
+ #include "diagnostic.h"
+ 
+ /* A diagnostic_context surrogate for stderr.  */
+-static diagnostic_context global_diagnostic_context;
++diagnostic_context global_diagnostic_context;
+ diagnostic_context *global_dc = &global_diagnostic_context;
+ 
+ /* Standard error reporting routines in increasing order of severity.  */
+--- a/gcc/gcc.cc
++++ b/gcc/gcc.cc
+@@ -4203,6 +4203,8 @@ driver_handle_option (struct gcc_options *opts,
+   gcc_assert (loc == UNKNOWN_LOCATION);
+   gcc_assert (dc == global_dc);
+ 
++  print_file_name = nullptr;
++
+   switch (opt_index)
+     {
+     case OPT_dumpspecs:
+--- a/libiberty/getopt1.c
++++ b/libiberty/getopt1.c
+@@ -33,7 +33,7 @@
+ 
+ #include <stdio.h>
+ 
+-#include "getopt.h"
++#include "../include/getopt.h"
+ 
+ /* Comment out all this code if we are using the GNU C Library, and are not
+    actually compiling the library itself.  This code is part of the GNU C
+--- a/libiberty/setenv.c
++++ b/libiberty/setenv.c
+@@ -133,7 +133,7 @@ setenv (const char *name, const char *value, int replace)
+ 
+       new_environ[size + 1] = NULL;
+ 
+-      last_environ = __environ = new_environ;
++      last_environ = new_environ;
+     }
+   else if (replace)
+     {

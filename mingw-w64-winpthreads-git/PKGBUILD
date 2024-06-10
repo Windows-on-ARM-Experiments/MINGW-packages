@@ -5,7 +5,7 @@
 _realname=winpthreads
 pkgbase=mingw-w64-${_realname}-git
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}-git" "${MINGW_PACKAGE_PREFIX}-libwinpthread-git")
-pkgver=12.0.0.r509.g079e6092b
+pkgver=12.0.0dev
 pkgrel=1
 _commit='079e6092b3c49a791e2d36282781827c75d12bba'
 pkgdesc="MinGW-w64 winpthreads library (mingw-w64)"
@@ -16,32 +16,38 @@ msys2_repository_url="https://sourceforge.net/p/mingw-w64/mingw-w64/ci/master/tr
 # licensed under BSD [1].
 license=('spdx:MIT AND BSD-3-Clause-Clear')
 arch=('any')
-mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clangarm64')
+mingw_arch=('mingw32' 'mingw64' 'mingwarm64' 'ucrt64' 'clang64' 'clangarm64')
 groups=("${MINGW_PACKAGE_PREFIX}-toolchain")
 makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
              "${MINGW_PACKAGE_PREFIX}-binutils"
-             "${MINGW_PACKAGE_PREFIX}-autotools"
+             "mingw-w64-x86_64-autotools"
              "${MINGW_PACKAGE_PREFIX}-crt-git"
              "${MINGW_PACKAGE_PREFIX}-headers-git"
              "git")
 options=('!emptydirs')
-source=("mingw-w64"::"git+https://git.code.sf.net/p/mingw-w64/mingw-w64#commit=$_commit"
-        "0001-Define-__-de-register_frame_info-in-fake-libgcc_s.patch")
-sha256sums=('c79f950762101d293e9a6c063e69dd7b9ec36f0f28966b7643c957a227d3b55b'
-            '2e779bcc60a1422b23e0cfdb5c0f6851f2382592bb4675d08a6bdef78d5e5c10')
+source=("mingw-w64"::"git+https://github.com/Windows-on-ARM-Experiments/mingw-woarm64.git#branch=woarm64"
+        "0001-Define-__-de-register_frame_info-in-fake-libgcc_s.patch"
+        "9998-add-mno-outline-atomics.patch"
+        "9999-workarounds.patch")
+sha256sums=('SKIP'
+            '2e779bcc60a1422b23e0cfdb5c0f6851f2382592bb4675d08a6bdef78d5e5c10'
+            'SKIP'
+            'SKIP')
 
 pkgver() {
   cd "${srcdir}/mingw-w64"
-  git describe --long ${_commit} | sed 's/\([^-]*-g\)/r\1/;s/-/./g;s/^v//g'
+  git describe --long --always | sed 's/\([^-]*-g\)/r\1/;s/-/./g;s/^v//g'
 }
 
 prepare() {
   cd "${srcdir}/mingw-w64"
   [[ -f mingw-w64-libraries/winpthreads/src/libgcc/dll_frame_info.c ]] && rm -rf mingw-w64-libraries/winpthreads/src/libgcc/dll_frame_info.c
   git apply "${srcdir}"/0001-Define-__-de-register_frame_info-in-fake-libgcc_s.patch
+  patch -p1 -i ${srcdir}/9998-add-mno-outline-atomics.patch
+  patch -p1 -i ${srcdir}/9999-workarounds.patch
 
   cd "${srcdir}"/mingw-w64/mingw-w64-libraries/winpthreads
-  autoreconf -vfi
+  PATH="/mingw64/bin:$PATH" autoreconf -vfi -I /mingw64/share/aclocal
 }
 
 build() {
