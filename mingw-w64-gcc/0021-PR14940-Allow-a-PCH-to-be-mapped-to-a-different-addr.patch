@@ -22,16 +22,8 @@ diff --git a/gcc/config/i386/host-mingw32.cc b/gcc/config/i386/host-mingw32.cc
 index f915b85abd0..cb254629029 100644
 --- a/gcc/config/i386/host-mingw32.cc
 +++ b/gcc/config/i386/host-mingw32.cc
-@@ -135,7 +135,6 @@ mingw32_gt_pch_use_address (void *&addr, size_t size, int fd,
-      and earlier, backslashes are invalid in object name.  So, we need
-      to check if we are on Windows2000 or higher.  */
-   OSVERSIONINFO version_info;
--  int r;
- 
-   version_info.dwOSVersionInfoSize = sizeof (version_info);
- 
 @@ -169,25 +168,24 @@ mingw32_gt_pch_use_address (void *&addr, size_t size, int fd,
-       return -1; 
+       return -1;
      }
  
 -  /* Retry five times, as here might occure a race with multiple gcc's
@@ -45,7 +37,7 @@ index f915b85abd0..cb254629029 100644
 -      if (r != 4)
 -        Sleep (500);
 -   }
--      
+-
 -  if (mmap_addr != addr)
 +  /* Try mapping the file at `addr`.  */
 +  mmap_addr = MapViewOfFileEx (mmap_handle, FILE_MAP_COPY, 0, offset,

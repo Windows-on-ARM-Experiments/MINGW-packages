@@ -1,3 +1,14 @@
+--- a/configure.ac
++++ b/configure.ac
+@@ -5,7 +5,7 @@ AC_CONFIG_AUX_DIR([utils])
+ AC_CANONICAL_TARGET
+ AM_INIT_AUTOMAKE([foreign])
+ AC_PREREQ([2.63])
+-AM_GNU_GETTEXT_VERSION(0.17)
++AM_GNU_GETTEXT_VERSION(0.24)
+ 
+ dnl Checks for programs.
+ AC_PROG_CC
 --- libtre/configure.ac.orig	2024-10-16 07:56:30.608197900 +0200
 +++ libtre/configure.ac	2024-10-16 07:58:37.253298700 +0200
 @@ -435,16 +435,6 @@

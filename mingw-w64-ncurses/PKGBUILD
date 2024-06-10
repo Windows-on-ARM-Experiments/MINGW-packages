@@ -9,7 +9,7 @@ pkgver=${_base_ver}.${_date_rev}
 pkgrel=3
 pkgdesc="System V Release 4.0 curses emulation library (mingw-w64)"
 arch=('any')
-mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clangarm64')
+mingw_arch=('mingw32' 'mingw64' 'mingwarm64' 'ucrt64' 'clang64' 'clangarm64')
 url="https://www.gnu.org/software/ncurses/"
 msys2_references=(
   "cpe: cpe:/a:gnu:ncurses"
@@ -20,7 +20,7 @@ depends=("${MINGW_PACKAGE_PREFIX}-gcc-libs"
          "${MINGW_PACKAGE_PREFIX}-gettext-runtime"
          "${MINGW_PACKAGE_PREFIX}-libsystre")
 makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
-             "${MINGW_PACKAGE_PREFIX}-autotools")
+             "mingw-w64-x86_64-autotools")
 source=("https://invisible-mirror.net/archives/ncurses/current/${_realname}-${_base_ver}-${_date_rev}.tgz"{,.asc}
         002-ncurses-config-win-paths.patch
         ncurses-6.3-cflags-private.patch

@@ -10,7 +10,7 @@ pkgver=0.23.1
 pkgrel=1
 pkgdesc="GNU internationalization library (mingw-w64)"
 arch=('any')
-mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clangarm64')
+mingw_arch=('mingw32' 'mingw64' 'mingwarm64' 'ucrt64' 'clang64' 'clangarm64')
 url="https://www.gnu.org/software/gettext/"
 msys2_references=(
   "cpe: cpe:/a:gnu:gettext"
@@ -18,7 +18,7 @@ msys2_references=(
 # GPL3 for the package as a whole and LGPL for some parts, see the license files
 license=('spdx:GPL-3.0-or-later AND LGPL-2.1-or-later')
 makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
-             "${MINGW_PACKAGE_PREFIX}-autotools"
+             "mingw-w64-x86_64-autotools"
              "${MINGW_PACKAGE_PREFIX}-ncurses"
              "${MINGW_PACKAGE_PREFIX}-libiconv"
              "groff")
@@ -28,7 +28,8 @@ source=(https://ftp.gnu.org/pub/gnu/${_realname}/${_realname}-${pkgver}.tar.lz{,
         122-Use-LF-as-newline-in-envsubst.patch
         0021-replace-fsync.patch
         0022-libasprintf.patch
-        0024-disable-gnu-format.patch)
+        0024-disable-gnu-format.patch
+        9999-workarounds.patch)
 sha256sums=('093de8a7ffb4670981fac271301bff56433c2fa1e71fb3b8b621891a21e8fd49'
             'SKIP'
             'e3a933c96a711bbb5ba6e584dd35f897dc7043da90a5682c05b137a0ad93bc7a'
@@ -36,7 +37,8 @@ sha256sums=('093de8a7ffb4670981fac271301bff56433c2fa1e71fb3b8b621891a21e8fd49'
             'ec39103d851262c02c27b7038f3c538e03afaefc6aa050311d62519d192ff38c'
             '380dbddee2f9e2feee4c1435e8a942b5d11d0125e60c3350ebb10c19b19011aa'
             'c354f6a7021069c99b90f1c6d6f6a4ccf40a01e9f6742b866df2b5a7286cb868'
-            'ce7ccf6dd3a492cab322253cd67310899b546eccc25821c25cbc047a1a984633')
+            'ce7ccf6dd3a492cab322253cd67310899b546eccc25821c25cbc047a1a984633'
+            'SKIP')
 validpgpkeys=('462225C3B46F34879FC8496CD605848ED7E69871'  # Daiki Ueno
               '9001B85AF9E1B83DF1BDA942F5BE8B267C6A406D') # Bruno Haible
 
@@ -66,7 +68,10 @@ prepare() {
   apply_patch_with_msg \
     0024-disable-gnu-format.patch
 
-  libtoolize --automake --copy --force
+  apply_patch_with_msg \
+    9999-workarounds.patch
+
+  /mingw64/bin/libtoolize --automake --copy --force
   WANT_AUTOMAKE=latest ./autogen.sh --skip-gnulib
 }
 

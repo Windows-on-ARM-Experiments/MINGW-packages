@@ -1,0 +1,15 @@
+--- a/gcc/config.gcc
++++ b/gcc/config.gcc
+@@ -1273,6 +1273,12 @@ aarch64-*-mingw*)
+ 	tm_file="${tm_file} aarch64/aarch64-abi-ms.h"
+ 	tm_file="${tm_file} aarch64/aarch64-coff.h"
+ 	tm_file="${tm_file} aarch64/cygming.h"
++	if test x$enable_threads = xposix ; then
++	  tm_file="${tm_file} i386/mingw-pthread.h"
++	fi
++	if test x$enable_threads = xmcf ; then
++	  tm_file="${tm_file} i386/mingw-mcfgthread.h"
++	fi
+ 	tm_file="${tm_file} mingw/mingw32.h"
+ 	tm_file="${tm_file} mingw/mingw-stdint.h"
+ 	tm_file="${tm_file} mingw/winnt.h"

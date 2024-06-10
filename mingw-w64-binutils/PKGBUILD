@@ -5,11 +5,11 @@
 _realname=binutils
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
-pkgver=2.44
+pkgver=2.45dev
 pkgrel=1
 pkgdesc="A set of programs to assemble and manipulate binary and object files (mingw-w64)"
 arch=('any')
-mingw_arch=('mingw32' 'mingw64' 'ucrt64')
+mingw_arch=('mingw32' 'mingw64' 'mingwarm64' 'ucrt64')
 url="https://www.gnu.org/software/binutils/"
 msys2_references=(
   "cpe: cpe:/a:gnu:binutils"
@@ -19,11 +19,15 @@ groups=("${MINGW_PACKAGE_PREFIX}-toolchain")
 depends=("${MINGW_PACKAGE_PREFIX}-gettext-runtime"
          "${MINGW_PACKAGE_PREFIX}-libwinpthread"
          "${MINGW_PACKAGE_PREFIX}-zlib"
-         "${MINGW_PACKAGE_PREFIX}-zstd")
+         "${MINGW_PACKAGE_PREFIX}-zstd"
+         "${MINGW_PACKAGE_PREFIX}-gmp"
+         "${MINGW_PACKAGE_PREFIX}-mpfr"
+         "${MINGW_PACKAGE_PREFIX}-isl")
 makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
              "${MINGW_PACKAGE_PREFIX}-gettext-tools"
-             "${MINGW_PACKAGE_PREFIX}-autotools")
-source=(https://ftp.gnu.org/gnu/binutils/${_realname}-${pkgver}.tar.bz2{,.sig}
+             "mingw-w64-x86_64-autotools"
+             "git")
+source=("${_realname}"::"git+https://github.com/Windows-on-ARM-Experiments/binutils-woarm64.git#branch=woarm64"
         0002-check-for-unusual-file-harder.patch
         0010-bfd-Increase-_bfd_coff_max_nscns-to-65279.patch
         0110-binutils-mingw-gnu-print.patch
@@ -33,8 +37,7 @@ source=(https://ftp.gnu.org/gnu/binutils/${_realname}-${pkgver}.tar.bz2{,.sig}
         libiberty-unlink-handle-windows-nul.patch
         3001-hack-libiberty-link-order.patch
 )
-sha256sums=('f66390a661faa117d00fab2e79cf2dc9d097b42cc296bf3f8677d1e7b452dc3a'
-            'SKIP'
+sha256sums=('SKIP'
             '2c99345fc575c3a060d6677537f636c6c4154fac0fde508070f3b6296c1060d4'
             '4e8ac055df61b1b5d6ae29dc87e1154737c2e87c7b244b44866702cabf1a5d18'
             '79eab27a3b0aeaddcdac49c93b5e3ee1bfac7e9782fc4d17d64061a52362e76a'
@@ -55,7 +58,7 @@ apply_patch_with_msg() {
 }
 
 prepare() {
-  cd "${srcdir}"/${_realname}-${pkgver}
+  cd "${srcdir}"/${_realname}
 
   apply_patch_with_msg \
     0002-check-for-unusual-file-harder.patch \
@@ -101,11 +104,13 @@ build() {
   declare -a extra_config=""
   if [ "${CARCH}" = "x86_64" ]; then
     extra_config+=('--enable-64-bit-bfd')
+  elif [ "${CARCH}" = "aarch64" ]; then
+    extra_config+=('--disable-gdb')
   else
     LDFLAGS+=" -Wl,--large-address-aware"
   fi
 
-  ../${_realname}-${pkgver}/configure \
+  ../${_realname}/configure \
     --prefix=${MINGW_PREFIX} \
     --build=${MINGW_CHOST} \
     --host=${MINGW_CHOST} \
@@ -139,7 +144,7 @@ package() {
   cd "${srcdir}"/build-${MSYSTEM}
   make DESTDIR="${pkgdir}" install
 
-  install -Dm644 "${srcdir}/${_realname}-${pkgver}/COPYING"* -t "${pkgdir}${MINGW_PREFIX}/share/licenses/${_realname}"
+  install -Dm644 "${srcdir}/${_realname}/COPYING"* -t "${pkgdir}${MINGW_PREFIX}/share/licenses/${_realname}"
 
   # https://github.com/msys2/MINGW-packages/issues/7890
   rm -f "${pkgdir}${MINGW_PREFIX}/lib/bfd-plugins/libdep.a"

@@ -1,0 +1,130 @@
+--- a/gettext-tools/src/msgattrib.c
++++ b/gettext-tools/src/msgattrib.c
+@@ -28,6 +28,10 @@
+ 
+ #include <textstyle.h>
+ 
++#if defined(__cplusplus)
++#define unreachable() __builtin_unreachable()
++#endif
++
+ #include <error.h>
+ #include "noreturn.h"
+ #include "closeout.h"
+--- a/gettext-tools/src/msgcat.c
++++ b/gettext-tools/src/msgcat.c
+@@ -28,6 +28,10 @@
+ 
+ #include <textstyle.h>
+ 
++#if defined(__cplusplus)
++#define unreachable() __builtin_unreachable()
++#endif
++
+ #include <error.h>
+ #include "noreturn.h"
+ #include "closeout.h"
+--- a/gettext-tools/src/msgcomm.c
++++ b/gettext-tools/src/msgcomm.c
+@@ -28,6 +28,10 @@
+ 
+ #include <textstyle.h>
+ 
++#if defined(__cplusplus)
++#define unreachable() __builtin_unreachable()
++#endif
++
+ #include <error.h>
+ #include "noreturn.h"
+ #include "closeout.h"
+--- a/gettext-tools/src/msgconv.c
++++ b/gettext-tools/src/msgconv.c
+@@ -28,6 +28,10 @@
+ 
+ #include <textstyle.h>
+ 
++#if defined(__cplusplus)
++#define unreachable() __builtin_unreachable()
++#endif
++
+ #include <error.h>
+ #include "noreturn.h"
+ #include "closeout.h"
+--- a/gettext-tools/src/msgen.c
++++ b/gettext-tools/src/msgen.c
+@@ -28,6 +28,10 @@
+ 
+ #include <textstyle.h>
+ 
++#if defined(__cplusplus)
++#define unreachable() __builtin_unreachable()
++#endif
++
+ #include <error.h>
+ #include "noreturn.h"
+ #include "closeout.h"
+--- a/gettext-tools/src/msgfilter.c
++++ b/gettext-tools/src/msgfilter.c
+@@ -32,6 +32,10 @@
+ 
+ #include <textstyle.h>
+ 
++#if defined(__cplusplus)
++#define unreachable() __builtin_unreachable()
++#endif
++
+ #include <error.h>
+ #include "noreturn.h"
+ #include "closeout.h"
+--- a/gettext-tools/src/msggrep.c
++++ b/gettext-tools/src/msggrep.c
+@@ -39,6 +39,10 @@
+ 
+ #include <textstyle.h>
+ 
++#if defined(__cplusplus)
++#define unreachable() __builtin_unreachable()
++#endif
++
+ #include <error.h>
+ #include "noreturn.h"
+ #include "closeout.h"
+--- a/gettext-tools/src/msgmerge.c
++++ b/gettext-tools/src/msgmerge.c
+@@ -33,6 +33,10 @@
+ 
+ #include <textstyle.h>
+ 
++#if defined(__cplusplus)
++#define unreachable() __builtin_unreachable()
++#endif
++
+ #include <error.h>
+ #include "noreturn.h"
+ #include "closeout.h"
+--- a/gettext-tools/src/msguniq.c
++++ b/gettext-tools/src/msguniq.c
+@@ -28,6 +28,10 @@
+ 
+ #include <textstyle.h>
+ 
++#if defined(__cplusplus)
++#define unreachable() __builtin_unreachable()
++#endif
++
+ #include <error.h>
+ #include "noreturn.h"
+ #include "closeout.h"
+--- a/gettext-tools/src/xgettext.c
++++ b/gettext-tools/src/xgettext.c
+@@ -41,6 +41,10 @@
+ 
+ #include <textstyle.h>
+ 
++#if defined(__cplusplus)
++#define unreachable() __builtin_unreachable()
++#endif
++
+ #include <error.h>
+ #include "noreturn.h"
+ #include "rc-str-list.h"

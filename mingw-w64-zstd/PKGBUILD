@@ -7,7 +7,7 @@ pkgver=1.5.7
 pkgrel=1
 pkgdesc="Zstandard - Fast real-time compression algorithm (mingw-w64)"
 arch=('any')
-mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clangarm64')
+mingw_arch=('mingw32' 'mingw64' 'mingwarm64' 'ucrt64' 'clang64' 'clangarm64')
 url='https://facebook.github.io/zstd/'
 msys2_repository_url="https://github.com/facebook/zstd"
 msys2_references=(
@@ -16,8 +16,8 @@ msys2_references=(
 license=('spdx:BSD-3-Clause OR GPL-2.0-or-later')
 depends=("${MINGW_PACKAGE_PREFIX}-gcc-libs")
 makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
-             "${MINGW_PACKAGE_PREFIX}-cmake"
-             "${MINGW_PACKAGE_PREFIX}-ninja")
+             "mingw-w64-x86_64-cmake"
+             "mingw-w64-x86_64-ninja")
 source=("https://github.com/facebook/zstd/releases/download/v${pkgver}/${_realname}-${pkgver}.tar.gz"{,.sig}
         zstd-1.4.0-fileio-mingw.patch)
 sha256sums=('eb33e51f49a15e023950cd7825ca74a4a2b43db8354825ac24fc1b7ee09e6fa3'
@@ -42,8 +42,9 @@ build() {
     extra_config+=("-DCMAKE_BUILD_TYPE=Debug")
   fi
 
+  PATH="/mingw64/bin:$PATH" \
   MSYS2_ARG_CONV_EXCL="-DCMAKE_INSTALL_PREFIX=" \
-    ${MINGW_PREFIX}/bin/cmake \
+    /mingw64/bin/cmake \
       -GNinja \
       -DCMAKE_INSTALL_PREFIX=${MINGW_PREFIX} \
       -DBUILD_SHARED_LIBS=ON \
@@ -53,14 +54,14 @@ build() {
       -DZSTD_PROGRAMS_LINK_SHARED=ON \
       ../${_realname}-${pkgver}/build/cmake
 
-  ${MINGW_PREFIX}/bin/cmake --build .
+  /mingw64/bin/cmake --build .
 }
 
 
 package() {
   cd "${srcdir}"/build-${MSYSTEM}
 
-  DESTDIR="${pkgdir}" ${MINGW_PREFIX}/bin/cmake --install .
+  DESTDIR="${pkgdir}" /mingw64/bin/cmake --install .
 
   install -Dm644 "${srcdir}/${_realname}-${pkgver}/LICENSE" "${pkgdir}${MINGW_PREFIX}/share/licenses/${_realname}/LICENSE"
 }
