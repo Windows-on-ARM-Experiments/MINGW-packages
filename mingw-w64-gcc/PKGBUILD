@@ -5,21 +5,31 @@
 # Contributor: wirx6 <wirx654@gmail.com>
 # Contributor: Kirill Müller <krlmlr@mailbox.org>
 
-if [[ ${CARCH} != i686 ]]; then
-  _enable_ada=yes
-  _enable_objc=yes
-  _enable_rust=yes
-  _enable_jit=yes
-else
-  _enable_ada=no
-  _enable_objc=no
-  _enable_rust=no
-  _enable_jit=no
-fi
+case ${CARCH} in
+  x86_64)
+    _enable_ada=yes
+    _enable_objc=yes
+    _enable_rust=yes
+    _enable_jit=yes
+    ;;
+  aarch64)
+    _enable_ada=no
+    _enable_objc=no
+    _enable_rust=no
+    _enable_jit=no
+    ;;
+  i686)
+    _enable_ada=no
+    _enable_objc=no
+    _enable_rust=no
+    _enable_jit=no
+    ;;
+esac
 
 _threads="posix"
 
 _realname=gcc
+_base_ver=15.0.0
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}"
          "${MINGW_PACKAGE_PREFIX}-${_realname}-libs"
@@ -31,27 +41,13 @@ pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}"
          $([[ "$_enable_rust" == "yes" ]] && echo "${MINGW_PACKAGE_PREFIX}-${_realname}-rust")
          $([[ "$_enable_jit" == "yes" ]] && echo "${MINGW_PACKAGE_PREFIX}-libgccjit")
         )
-pkgver=14.1.0
-_rc=""
-_snapshot=
-if [[ -z ${_rc} ]]; then
-  _version=${pkgver%%.*}
-  _libdir=lib/gcc/${CHOST}/${pkgver%%+*}
-else
-  _version=${pkgver}-${_rc}
-  _libdir=lib/gcc/${CHOST}/${pkgver%%.*}.0.1
-fi
-if [[ -z ${_snapshot} ]]; then
-  _sourcedir=${_realname}-${pkgver}
-  _url=https://ftp.gnu.org/gnu/gcc/${_realname}-${pkgver%%+*}
-else
-  _sourcedir=${_realname}-${_version}-${_snapshot}
-  _url=https://gcc.gnu.org/pub/gcc/snapshots/${_version}-${_snapshot}
-fi
+pkgver=15.0.0
+_libdir=lib/gcc/${CHOST}/${_base_ver%%+*}
+_sourcedir=${_realname}
 pkgrel=3
 pkgdesc="GCC for the MinGW-w64"
 arch=('any')
-mingw_arch=('mingw32' 'mingw64' 'ucrt64')
+mingw_arch=('mingw32' 'mingw64' 'mingwarm64' 'ucrt64')
 url="https://gcc.gnu.org"
 msys2_references=(
   "cpe: cpe:/a:gnu:gcc"
@@ -60,23 +56,23 @@ license=('spdx:GPL-3.0-or-later')
 makedepends=("${MINGW_PACKAGE_PREFIX}-${_realname}"
              $([[ "$_enable_ada" == "yes" ]] && echo "${MINGW_PACKAGE_PREFIX}-${_realname}-ada")
              $([[ "$_enable_rust" == "yes" ]] && echo "${MINGW_PACKAGE_PREFIX}-rust")
-             "${MINGW_PACKAGE_PREFIX}-autotools"
+             "mingw-w64-x86_64-autotools"
              "${MINGW_PACKAGE_PREFIX}-binutils"
              "${MINGW_PACKAGE_PREFIX}-crt"
              "${MINGW_PACKAGE_PREFIX}-headers"
              "${MINGW_PACKAGE_PREFIX}-gmp"
-             "${MINGW_PACKAGE_PREFIX}-gperf"
+             "mingw-w64-x86_64-gperf"
              "${MINGW_PACKAGE_PREFIX}-isl"
              "${MINGW_PACKAGE_PREFIX}-libiconv"
              "${MINGW_PACKAGE_PREFIX}-mpc"
              "${MINGW_PACKAGE_PREFIX}-mpfr"
-             "${MINGW_PACKAGE_PREFIX}-python"
+             "mingw-w64-x86_64-python"
              "${MINGW_PACKAGE_PREFIX}-windows-default-manifest"
              "${MINGW_PACKAGE_PREFIX}-winpthreads"
              "${MINGW_PACKAGE_PREFIX}-zlib"
              "${MINGW_PACKAGE_PREFIX}-zstd")
 options=('!emptydirs') # '!strip' 'debug')
-source=(${_url}/${_sourcedir}.tar.xz{,.sig}
+source=("${_realname}"::"git+https://github.com/Windows-on-ARM-Experiments/gcc-woarm64.git#branch=woarm64"
         "gdbinit"
         0001-missing-__thiscall-attribute-on-builtin-declaration-of-__cxa_thread_atexit.patch
         0003-Windows-Follow-Posix-dir-exists-semantics-more-close.patch
@@ -92,8 +88,7 @@ source=(${_url}/${_sourcedir}.tar.xz{,.sig}
         0200-add-m-no-align-vector-insn-option-for-i386.patch
         2001-fix-building-rust-on-mingw-w64.patch
         3001-fix-ice.patch)
-sha256sums=('e283c654987afe3de9d8080bc0bd79534b5ca0d681a73a11ff2b5d3767426840'
-            'SKIP'
+sha256sums=('SKIP'
             'bce81824fc89e5e62cca350de4c17a27e27a18a1a1ad5ca3492aec1fc5af3234'
             '7cb64cb9dc7117d4d5d32bd7910ced7c170718f92bc0576594506edb3aeabb42'
             '3fc35067823f87e48dd3bfd265e7593000dc110fa9ad5f16c81b896765fc897a'
@@ -132,6 +127,12 @@ del_file_exists() {
   done
 }
 # =========================================== #
+
+pkgver() {
+  cd "${srcdir}/${_realname}"
+
+  printf "%s.r%s.%s" "${_base_ver}" "$(git rev-list --count HEAD)" "$(git rev-parse --short=12 HEAD)"
+}
 
 prepare() {
   cd "${srcdir}"/${_sourcedir}
@@ -340,7 +341,7 @@ package_gcc() {
            "${MINGW_PACKAGE_PREFIX}-gmp"
            "${MINGW_PACKAGE_PREFIX}-mpfr"
            "${MINGW_PACKAGE_PREFIX}-mpc"
-           "${MINGW_PACKAGE_PREFIX}-${_realname}-libs=${pkgver}-${pkgrel}"
+           "${MINGW_PACKAGE_PREFIX}-${_realname}-libs=${_base_ver}-${pkgrel}"
            "${MINGW_PACKAGE_PREFIX}-windows-default-manifest"
            "${MINGW_PACKAGE_PREFIX}-winpthreads"
            "${MINGW_PACKAGE_PREFIX}-zlib"
@@ -417,15 +418,15 @@ package_gcc() {
 
   # install "custom" system gdbinit
   install -D -m644 "${srcdir}"/gdbinit "${pkgdir}"${MINGW_PREFIX}/etc/gdbinit
-  sed -i 's|%GCC_NAME%|gcc-'${pkgver%%+*}'|g' "${pkgdir}"${MINGW_PREFIX}/etc/gdbinit
+  sed -i 's|%GCC_NAME%|gcc-'${_base_ver%%+*}'|g' "${pkgdir}"${MINGW_PREFIX}/etc/gdbinit
 
   # byte-compile python libraries
-  ${MINGW_PREFIX}/bin/python -m compileall -o 0 -o 1 "${pkgdir}"${MINGW_PREFIX}/share/gcc-${pkgver%%+*}/
+  ${MINGW_PREFIX}/bin/python -m compileall -o 0 -o 1 "${pkgdir}"${MINGW_PREFIX}/share/gcc-${_base_ver%%+*}/
 }
 
 package_gcc-libgfortran() {
   pkgdesc="GNU Compiler Collection (libgfortran) for MinGW-w64"
-  depends=("${MINGW_PACKAGE_PREFIX}-${_realname}-libs=${pkgver}-${pkgrel}"
+  depends=("${MINGW_PACKAGE_PREFIX}-${_realname}-libs=${_base_ver}-${pkgrel}"
            "${MINGW_PACKAGE_PREFIX}-libwinpthread")
   provides=("${MINGW_PACKAGE_PREFIX}-fc-libs")
 
@@ -438,9 +439,9 @@ package_gcc-libgfortran() {
 
 package_gcc-fortran() {
   pkgdesc="GNU Compiler Collection (Fortran) for MinGW-w64"
-  depends=("${MINGW_PACKAGE_PREFIX}-${_realname}=${pkgver}-${pkgrel}"
-           "${MINGW_PACKAGE_PREFIX}-${_realname}-libgfortran=${pkgver}-${pkgrel}"
-           "${MINGW_PACKAGE_PREFIX}-${_realname}-libs=${pkgver}-${pkgrel}"
+  depends=("${MINGW_PACKAGE_PREFIX}-${_realname}=${_base_ver}-${pkgrel}"
+           "${MINGW_PACKAGE_PREFIX}-${_realname}-libgfortran=${_base_ver}-${pkgrel}"
+           "${MINGW_PACKAGE_PREFIX}-${_realname}-libs=${_base_ver}-${pkgrel}"
            "${MINGW_PACKAGE_PREFIX}-gmp"
            "${MINGW_PACKAGE_PREFIX}-isl"
            "${MINGW_PACKAGE_PREFIX}-libwinpthread"
@@ -461,8 +462,8 @@ package_gcc-fortran() {
 
 package_gcc-ada() {
   pkgdesc="GNU Compiler Collection (Ada) for MinGW-w64"
-  depends=("${MINGW_PACKAGE_PREFIX}-${_realname}=${pkgver}-${pkgrel}"
-           "${MINGW_PACKAGE_PREFIX}-${_realname}-libs=${pkgver}-${pkgrel}"
+  depends=("${MINGW_PACKAGE_PREFIX}-${_realname}=${_base_ver}-${pkgrel}"
+           "${MINGW_PACKAGE_PREFIX}-${_realname}-libs=${_base_ver}-${pkgrel}"
            "${MINGW_PACKAGE_PREFIX}-gmp"
            "${MINGW_PACKAGE_PREFIX}-isl"
            "${MINGW_PACKAGE_PREFIX}-libwinpthread"
@@ -480,8 +481,8 @@ package_gcc-ada() {
 
 package_gcc-objc() {
   pkgdesc="GNU Compiler Collection (ObjC,Obj-C++) for MinGW-w64"
-  depends=("${MINGW_PACKAGE_PREFIX}-${_realname}=${pkgver}-${pkgrel}"
-           "${MINGW_PACKAGE_PREFIX}-${_realname}-libs=${pkgver}-${pkgrel}"
+  depends=("${MINGW_PACKAGE_PREFIX}-${_realname}=${_base_ver}-${pkgrel}"
+           "${MINGW_PACKAGE_PREFIX}-${_realname}-libs=${_base_ver}-${pkgrel}"
            "${MINGW_PACKAGE_PREFIX}-gmp"
            "${MINGW_PACKAGE_PREFIX}-isl"
            "${MINGW_PACKAGE_PREFIX}-libwinpthread"
@@ -502,8 +503,8 @@ package_gcc-objc() {
 
 package_gcc-rust() {
   pkgdesc="GNU Compiler Collection (Rust) for MinGW-w64"
-  depends=("${MINGW_PACKAGE_PREFIX}-${_realname}=${pkgver}-${pkgrel}"
-           "${MINGW_PACKAGE_PREFIX}-${_realname}-libs=${pkgver}-${pkgrel}"
+  depends=("${MINGW_PACKAGE_PREFIX}-${_realname}=${_base_ver}-${pkgrel}"
+           "${MINGW_PACKAGE_PREFIX}-${_realname}-libs=${_base_ver}-${pkgrel}"
            "${MINGW_PACKAGE_PREFIX}-gmp"
            "${MINGW_PACKAGE_PREFIX}-isl"
            "${MINGW_PACKAGE_PREFIX}-libwinpthread"
@@ -520,8 +521,8 @@ package_gcc-rust() {
 
 package_gcc-lto-dump() {
   pkgdesc="Dump link time optimization object files (mingw-w64)"
-  depends=("${MINGW_PACKAGE_PREFIX}-${_realname}=$pkgver-$pkgrel"
-           "${MINGW_PACKAGE_PREFIX}-${_realname}-libs=${pkgver}-${pkgrel}"
+  depends=("${MINGW_PACKAGE_PREFIX}-${_realname}=$_base_ver-$pkgrel"
+           "${MINGW_PACKAGE_PREFIX}-${_realname}-libs=${_base_ver}-${pkgrel}"
            "${MINGW_PACKAGE_PREFIX}-gmp"
            "${MINGW_PACKAGE_PREFIX}-isl"
            "${MINGW_PACKAGE_PREFIX}-libwinpthread"
@@ -537,8 +538,8 @@ package_gcc-lto-dump() {
 
 package_libgccjit() {
   pkgdesc="GNU Compiler Collection (libgccjit) for MinGW-w64"
-  depends=("${MINGW_PACKAGE_PREFIX}-${_realname}=${pkgver}-${pkgrel}"
-           "${MINGW_PACKAGE_PREFIX}-${_realname}-libs=${pkgver}-${pkgrel}"
+  depends=("${MINGW_PACKAGE_PREFIX}-${_realname}=${_base_ver}-${pkgrel}"
+           "${MINGW_PACKAGE_PREFIX}-${_realname}-libs=${_base_ver}-${pkgrel}"
            "${MINGW_PACKAGE_PREFIX}-gmp"
            "${MINGW_PACKAGE_PREFIX}-isl"
            "${MINGW_PACKAGE_PREFIX}-libwinpthread"

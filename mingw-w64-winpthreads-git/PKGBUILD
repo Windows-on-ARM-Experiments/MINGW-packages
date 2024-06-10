@@ -3,11 +3,11 @@
 # Contributor: Renato Silva <br.renatosilva@gmail.com>
 
 _realname=winpthreads
+_base_ver=12.0.0
 pkgbase=mingw-w64-${_realname}-git
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}-git" "${MINGW_PACKAGE_PREFIX}-libwinpthread-git")
-pkgver=12.0.0.r81.g90abf784a
+pkgver=12.0.0.r7600.1a8f57e2c35e
 pkgrel=1
-_commit='90abf784ac344fe558e7e22cb5411d807862888d'
 pkgdesc="MinGW-w64 winpthreads library (mingw-w64)"
 url="https://www.mingw-w64.org/"
 msys2_repository_url="https://sourceforge.net/p/mingw-w64/mingw-w64/ci/master/tree/mingw-w64-libraries/winpthreads"
@@ -16,23 +16,24 @@ msys2_repository_url="https://sourceforge.net/p/mingw-w64/mingw-w64/ci/master/tr
 # licensed under BSD [1].
 license=('spdx:MIT AND BSD-3-Clause-Clear')
 arch=('any')
-mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clang32' 'clangarm64')
+mingw_arch=('mingw32' 'mingw64' 'mingwarm64' 'ucrt64' 'clang64' 'clang32' 'clangarm64')
 groups=("${MINGW_PACKAGE_PREFIX}-toolchain")
 makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
-             "${MINGW_PACKAGE_PREFIX}-binutils"
-             "${MINGW_PACKAGE_PREFIX}-autotools"
-             "${MINGW_PACKAGE_PREFIX}-crt-git"
+             "mingw-w64-x86_64-binutils"
+             "mingw-w64-x86_64-autotools"
+             "mingw-w64-x86_64-crt-git"
              "${MINGW_PACKAGE_PREFIX}-headers-git"
              "git")
 options=('!emptydirs')
-source=("mingw-w64"::"git+https://git.code.sf.net/p/mingw-w64/mingw-w64#commit=$_commit"
+source=("mingw-w64"::"git+https://github.com/Windows-on-ARM-Experiments/mingw-woarm64.git#branch=woarm64"
         "0001-Define-__-de-register_frame_info-in-fake-libgcc_s.patch")
-sha256sums=('6823f6166c6858a603d1ceda016f3fc0cf5318e48705fa1064277a0269640899'
+sha256sums=('SKIP'
             '2e779bcc60a1422b23e0cfdb5c0f6851f2382592bb4675d08a6bdef78d5e5c10')
 
 pkgver() {
-  cd "${srcdir}/mingw-w64"
-  git describe --long ${_commit} | sed 's/\([^-]*-g\)/r\1/;s/-/./g;s/^v//g'
+  cd "$srcdir/mingw-w64"
+
+  printf "%s.r%s.%s" "${_base_ver}" "$(git rev-list --count HEAD)" "$(git rev-parse --short=12 HEAD)"
 }
 
 prepare() {
@@ -41,7 +42,7 @@ prepare() {
   git apply "${srcdir}"/0001-Define-__-de-register_frame_info-in-fake-libgcc_s.patch
 
   cd "${srcdir}"/mingw-w64/mingw-w64-libraries/winpthreads
-  autoreconf -vfi
+  autoreconf -vfi -I /mingw64/share/aclocal
 }
 
 build() {

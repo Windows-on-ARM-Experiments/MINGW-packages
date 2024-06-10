@@ -49,17 +49,6 @@ index c6fd8b8f8d9..312f8d6d566 100644
  static const char *emit_build_id;
  #ifdef PDB_H
  static int pdb;
-@@ -310,7 +319,9 @@ enum options
-   OPTION_DISABLE_NO_SEH,
-   OPTION_DISABLE_NO_BIND,
-   OPTION_DISABLE_WDM_DRIVER,
--  OPTION_DISABLE_TERMINAL_SERVER_AWARE
-+  OPTION_DISABLE_TERMINAL_SERVER_AWARE,
-+  OPTION_DEFAULT_IMAGE_BASE_LOW,
-+  OPTION_DEFAULT_IMAGE_BASE_HIGH
- };
- 
- static void
 @@ -402,6 +413,10 @@ gld${EMULATION_NAME}_add_options
      {"disable-no-bind", no_argument, NULL, OPTION_DISABLE_NO_BIND},
      {"disable-wdmdriver", no_argument, NULL, OPTION_DISABLE_WDM_DRIVER},
@@ -138,5 +127,18 @@ index c6fd8b8f8d9..312f8d6d566 100644
        init[MSIMAGEBASEOFF].value = init[IMAGEBASEOFF].value;
      }
  
+diff --git a/ld/ldlex.h b/ld/ldlex.h
+index 7a0c3b4be94..929045be35f 100644
+--- a/ld/ldlex.h
++++ b/ld/ldlex.h
+@@ -387,6 +387,8 @@ enum option_values
+   OPTION_DISABLE_NO_BIND,
+   OPTION_DISABLE_WDM_DRIVER,
+   OPTION_DISABLE_TERMINAL_SERVER_AWARE,
++  OPTION_DEFAULT_IMAGE_BASE_LOW,
++  OPTION_DEFAULT_IMAGE_BASE_HIGH,
+   /* Used by emultempl/pep.em.  */
+   OPTION_DISABLE_HIGH_ENTROPY_VA,
+   OPTION_HIGH_ENTROPY_VA,
 -- 
 2.32.0

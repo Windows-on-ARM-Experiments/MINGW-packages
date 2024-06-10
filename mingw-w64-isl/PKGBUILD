@@ -7,11 +7,11 @@ pkgver=0.26
 pkgrel=1
 pkgdesc="Library for manipulating sets and relations of integer points bounded by linear constraints (mingw-w64)"
 arch=('any')
-mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clangarm64' 'clang32')
+mingw_arch=('mingw32' 'mingw64' 'mingwarm64' 'ucrt64' 'clang64' 'clangarm64' 'clang32')
 url="https://libisl.sourceforge.io/"
 depends=("${MINGW_PACKAGE_PREFIX}-gmp")
 makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
-             "${MINGW_PACKAGE_PREFIX}-autotools")
+             "mingw-w64-x86_64-autotools")
 options=('staticlibs')
 license=('MIT')
 source=("https://libisl.sourceforge.io/${_realname}-${pkgver}.tar.xz"
@@ -22,16 +22,18 @@ sha256sums=('a0b5cb06d24f9fa9e77b55fabbe9a3c94a336190345c2555f9915bb38e976504'
 prepare() {
   cd "${srcdir}/${_realname}-${pkgver}"
   patch -p1 -i ${srcdir}/isl-0.14.1-no-undefined.patch
-  autoreconf -fi
+  autoreconf -fi -I /mingw64/share/aclocal
 }
 
 build() {
   [[ -d ${srcdir}/build-${MSYSTEM} ]] && rm -rf ${srcdir}/build-${MSYSTEM}
   mkdir -p ${srcdir}/build-${MSYSTEM} && cd ${srcdir}/build-${MSYSTEM}
 
+  BUILD_EXEEXT=.exe \
   ../${_realname}-${pkgver}/configure \
     --prefix=${MINGW_PREFIX} \
     --build=${MINGW_CHOST} \
+    --host=${MINGW_CHOST} \
     --enable-static \
     --enable-shared \
     --with-gmp-prefix=${MINGW_PREFIX}

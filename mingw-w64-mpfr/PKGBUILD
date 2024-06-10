@@ -13,12 +13,13 @@ msys2_references=(
   "cpe: cpe:2.3:a:mpfr:gnu_mpfr"
 )
 arch=('any')
-mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clang32' 'clangarm64')
+mingw_arch=('mingw32' 'mingw64' 'mingwarm64' 'ucrt64' 'clang64' 'clang32' 'clangarm64')
 license=('spdx:LGPL-3.0-or-later')
 depends=("${MINGW_PACKAGE_PREFIX}-gcc-libs"
          "${MINGW_PACKAGE_PREFIX}-gmp")
 makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
-             "${MINGW_PACKAGE_PREFIX}-autotools")
+             "mingw-w64-x86_64-autotools"
+             "mingw-w64-x86_64-texinfo")
 source=(https://ftp.gnu.org/gnu/mpfr/${_realname}-${_pkgver}.tar.xz{,.sig})
         # patches.diff) # wget https://www.mpfr.org/mpfr-4.2.0/allpatches -O patches.diff
 sha256sums=('277807353a6726978996945af13e52829e3abd7a9a5b7fb2793894e18f1fcbb2'
@@ -29,7 +30,7 @@ prepare() {
   cd "${srcdir}/${_realname}-${_pkgver}"
 
   #patch -p1 -i ${srcdir}/patches.diff
-  autoreconf -fiv
+  autoreconf -fiv -I /mingw64/share/aclocal
 }
 
 build() {

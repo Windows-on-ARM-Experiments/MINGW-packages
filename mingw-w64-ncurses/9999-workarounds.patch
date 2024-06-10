@@ -1,0 +1,18 @@
+--- a/misc/run_tic.in
++++ b/misc/run_tic.in
+@@ -150,7 +150,6 @@
+ 	echo "** built new $TERMINFO"
+ else
+ 	echo "? tic could not build $TERMINFO"
+-	exit 1
+ fi
+ else
+ cat <<EOF
+@@ -170,7 +169,6 @@
+ 	echo "** built new $TERMINFO"
+ else
+ 	echo "? tic could not build $TERMINFO"
+-	exit 1
+ fi
+ fi
+ 

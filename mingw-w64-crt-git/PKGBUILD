@@ -5,10 +5,9 @@ pkgbase=mingw-w64-${_realname}-git
 pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}-git"
 pkgver=12.0.0.r81.g90abf784a
 pkgrel=1
-_commit='90abf784ac344fe558e7e22cb5411d807862888d'
 pkgdesc='MinGW-w64 CRT for Windows (mingw-w64)'
 arch=('any')
-mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clang32' 'clangarm64')
+mingw_arch=('mingw32' 'mingw64' 'mingwarm64' 'ucrt64' 'clang64' 'clang32' 'clangarm64')
 url='https://www.mingw-w64.org/'
 msys2_repository_url="https://sourceforge.net/p/mingw-w64/mingw-w64/ci/master/tree/mingw-w64-crt/"
 license=('spdx:ZPL-2.1')
@@ -16,17 +15,18 @@ groups=("${MINGW_PACKAGE_PREFIX}-toolchain")
 depends=("${MINGW_PACKAGE_PREFIX}-headers-git")
 makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
              "${MINGW_PACKAGE_PREFIX}-binutils"
-             "${MINGW_PACKAGE_PREFIX}-autotools"
+             "mingw-w64-x86_64-autotools"
              "git")
 provides=("${MINGW_PACKAGE_PREFIX}-${_realname}")
 conflicts=("${MINGW_PACKAGE_PREFIX}-${_realname}")
 options=('!strip' '!buildflags' '!emptydirs')
-source=("mingw-w64"::"git+https://git.code.sf.net/p/mingw-w64/mingw-w64#commit=$_commit")
-sha256sums=('6823f6166c6858a603d1ceda016f3fc0cf5318e48705fa1064277a0269640899')
+source=("${_realname}"::"git+https://github.com/Windows-on-ARM-Experiments/mingw-woarm64.git#branch=woarm64")
+sha256sums=('SKIP')
 
 pkgver() {
-  cd "${srcdir}/mingw-w64"
-  git describe --long ${_commit} | sed 's/\([^-]*-g\)/r\1/;s/-/./g;s/^v//g'
+  cd "${srcdir}/${_realname}"
+
+  printf "%s.r%s.%s" "${_base_ver}" "$(git rev-list --count HEAD)" "$(git rev-parse --short=12 HEAD)"
 }
 
 build() {
