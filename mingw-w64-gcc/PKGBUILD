@@ -243,6 +243,9 @@ build() {
   # In addition adaint.c does `#include <accctrl.h>` which pulls in msxml.h, hacky hack:
   CPPFLAGS+=" -DCOM_NO_WINDOWS_H"
 
+  CFLAGS+=" -I${MINGW_PREFIX}/include"
+  LDFLAGS+=" -L${MINGW_PREFIX}/lib"
+
   ../${_sourcedir}/configure \
     --prefix=${MINGW_PREFIX} \
     --with-local-prefix=${MINGW_PREFIX}/local \

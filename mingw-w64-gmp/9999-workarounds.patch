@@ -11,3 +11,21 @@ index 9cf9483..132141b 100644
  void h(){}
  static __inline__ t1 e(t2 rp,t2 up,int n,t1 v0)
  {t1 c,x,r;int i;if(v0){c=1;for(i=1;i<n;i++){x=up[i];r=x+1;rp[i]=r;}}return c;}
+@@ -1462,17 +1444,6 @@
+ using namespace foo;
+ ])
+ 
+-# GMP requires the standard C++ iostream classes
+-GMP_PROG_CXX_WORKS_PART([$1], [std iostream],
+-[/* This test rejects g++ 2.7.2 which doesn't have <iostream>, only a
+-    pre-standard iostream.h. */
+-#include <iostream>
+-
+-/* This test rejects OSF 5.1 Compaq C++ in its default pre-standard iostream
+-   mode, since that mode puts cout in the global namespace, not "std".  */
+-void someoutput (void) { std::cout << 123; }
+-])
+-
+ AC_MSG_RESULT($gmp_prog_cxx_works)
+ case $gmp_prog_cxx_works in
+   yes)

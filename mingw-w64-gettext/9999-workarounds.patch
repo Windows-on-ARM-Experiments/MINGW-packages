@@ -128,3 +128,28 @@
  #include <error.h>
  #include "noreturn.h"
  #include "rc-str-list.h"
+--- a/gettext-tools/gnulib-lib/setenv.c
++++ b/gettext-tools/gnulib-lib/setenv.c
+@@ -220,7 +220,7 @@
+ 
+       new_environ[size + 1] = NULL;
+ 
+-      last_environ = __environ = new_environ;
++      last_environ = new_environ;
+     }
+   else if (replace)
+     {
+@@ -311,13 +311,9 @@
+   if (__environ == last_environ && __environ != NULL)
+     {
+       /* We allocated this environment so we can free it.  */
+-      free (__environ);
+       last_environ = NULL;
+     }
+ 
+-  /* Clear the environment pointer removes the whole environment.  */
+-  __environ = NULL;
+-
+   UNLOCK;
+ 
+   return 0;

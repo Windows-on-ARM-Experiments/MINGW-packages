@@ -27,6 +27,9 @@ prepare() {
 build() {
   mkdir -p "${srcdir}/build-${MSYSTEM}" && cd "${srcdir}/build-${MSYSTEM}"
 
+  CFLAGS+=" -I${MINGW_PREFIX}/include"
+  LDFLAGS+=" -L${MINGW_PREFIX}/lib"
+
   ../systre-${pkgver}/configure\
     --prefix=${MINGW_PREFIX} \
     --build=${MINGW_CHOST} \

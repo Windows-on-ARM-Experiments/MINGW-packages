@@ -27,9 +27,11 @@ makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
 options=('!emptydirs')
 source=("mingw-w64"::"git+https://github.com/Windows-on-ARM-Experiments/mingw-woarm64.git#branch=woarm64"
         "0001-Define-__-de-register_frame_info-in-fake-libgcc_s.patch"
-        "9998-add-mno-outline-atomics.patch")
+        "9998-add-mno-outline-atomics.patch"
+        "9999-workarounds.patch")
 sha256sums=('SKIP'
             '2e779bcc60a1422b23e0cfdb5c0f6851f2382592bb4675d08a6bdef78d5e5c10'
+            'SKIP'
             'SKIP')
 
 pkgver() {
@@ -42,6 +44,7 @@ prepare() {
   [[ -f mingw-w64-libraries/winpthreads/src/libgcc/dll_frame_info.c ]] && rm -rf mingw-w64-libraries/winpthreads/src/libgcc/dll_frame_info.c
   git apply "${srcdir}"/0001-Define-__-de-register_frame_info-in-fake-libgcc_s.patch
   patch -p1 -i ${srcdir}/9998-add-mno-outline-atomics.patch
+  patch -p1 -i ${srcdir}/9999-workarounds.patch
 
   cd "${srcdir}"/mingw-w64/mingw-w64-libraries/winpthreads
   PATH="/mingw64/bin:$PATH" autoreconf -vfi -I /mingw64/share/aclocal

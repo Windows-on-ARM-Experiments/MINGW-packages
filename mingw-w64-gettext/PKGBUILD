@@ -19,7 +19,7 @@ msys2_references=(
 license=('spdx:GPL-3.0-or-later AND LGPL-2.1-or-later')
 makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
              "mingw-w64-x86_64-autotools"
-             "${MINGW_PACKAGE_PREFIX}-ncurses"
+             "mingw-w64-x86_64-ncurses"
              "${MINGW_PACKAGE_PREFIX}-libiconv"
              "groff")
 source=(https://ftp.gnu.org/pub/gnu/${_realname}/${_realname}-${pkgver}.tar.lz{,.sig}

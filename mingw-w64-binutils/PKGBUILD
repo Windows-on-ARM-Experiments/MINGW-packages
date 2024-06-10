@@ -24,7 +24,7 @@ depends=("${MINGW_PACKAGE_PREFIX}-gettext-runtime"
          "${MINGW_PACKAGE_PREFIX}-mpfr"
          "${MINGW_PACKAGE_PREFIX}-isl")
 makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
-             "${MINGW_PACKAGE_PREFIX}-gettext-tools"
+             "mingw-w64-x86_64-gettext-tools"
              "mingw-w64-x86_64-autotools"
              "git")
 source=("${_realname}"::"git+https://github.com/Windows-on-ARM-Experiments/binutils-woarm64.git#branch=woarm64"
@@ -36,6 +36,7 @@ source=("${_realname}"::"git+https://github.com/Windows-on-ARM-Experiments/binut
         reproducible-import-libraries.patch
         libiberty-unlink-handle-windows-nul.patch
         3001-hack-libiberty-link-order.patch
+        9999-workarounds.patch
 )
 sha256sums=('SKIP'
             '2c99345fc575c3a060d6677537f636c6c4154fac0fde508070f3b6296c1060d4'
@@ -45,7 +46,8 @@ sha256sums=('SKIP'
             'd584f1cd9e94cba0e9b27625c4acc8ad5242cd625c9b44839d42fc116072568c'
             'a094660ec95996c00b598429843b7869037732146442af567ada9f539bd40480'
             '7ccbd418695733c50966068fa9755a6abb156f53af23701d2bc097c63e9e0030'
-            '604628156c08f3e361de60329af250fab6839e23e61e289f8369a7e18a04e277')
+            '604628156c08f3e361de60329af250fab6839e23e61e289f8369a7e18a04e277'
+            'SKIP')
 validpgpkeys=('EAF1C276A747E9ED86210CBAC3126D3B4AE55E93'  # Tristan Gingold <gingold@adacore.com>
               '3A24BC1E8FB409FA9F14371813FCEF89DD9E3C4F') # Nick Clifton <nickc@redhat.com>
 
@@ -92,6 +94,9 @@ prepare() {
   # search paths, so imho if things link against the system lib or the just
   # built one is just luck, and I don't know how that is supposed to work.
   patch -p1 -i "${srcdir}/3001-hack-libiberty-link-order.patch"
+
+  apply_patch_with_msg \
+    9999-workarounds.patch
 }
 
 build() {
