@@ -8,7 +8,7 @@ pkgver=0.22.5
 pkgrel=2
 pkgdesc="GNU internationalization library (mingw-w64)"
 arch=('any')
-mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clang32' 'clangarm64')
+mingw_arch=('mingw32' 'mingw64' 'mingwarm64' 'ucrt64' 'clang64' 'clang32' 'clangarm64')
 url="https://www.gnu.org/software/gettext/"
 msys2_references=(
   "cpe: cpe:/a:gnu:gettext"
@@ -16,7 +16,7 @@ msys2_references=(
 # GPL3 for the package as a whole and LGPL for some parts, see the license files
 license=('spdx:GPL-3.0-or-later AND LGPL-2.1-or-later')
 makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
-             "${MINGW_PACKAGE_PREFIX}-autotools"
+             "mingw-w64-x86_64-autotools"
              "${MINGW_PACKAGE_PREFIX}-ncurses"
              "${MINGW_PACKAGE_PREFIX}-libiconv"
              "groff")
@@ -27,7 +27,8 @@ source=(https://ftp.gnu.org/pub/gnu/${_realname}/${_realname}-${pkgver}.tar.gz{,
         0021-replace-fsync.patch
         0022-libasprintf.patch
         0023-gnulib.patch
-        0024-disable-gnu-format.patch)
+        0024-disable-gnu-format.patch
+        9999-workarounds.patch)
 sha256sums=('ec1705b1e969b83a9f073144ec806151db88127f5e40fe5a94cb6c8fa48996a0'
             'SKIP'
             'cbc2f533012d646521afa20f8b256917fce040741ff42cf53fb6dd7123a6670a'
@@ -36,7 +37,8 @@ sha256sums=('ec1705b1e969b83a9f073144ec806151db88127f5e40fe5a94cb6c8fa48996a0'
             '380dbddee2f9e2feee4c1435e8a942b5d11d0125e60c3350ebb10c19b19011aa'
             'c354f6a7021069c99b90f1c6d6f6a4ccf40a01e9f6742b866df2b5a7286cb868'
             '4f34906eeb535c74fa3f2936729b59c36d05d503a274e2b850fc770263c60b46'
-            'ce7ccf6dd3a492cab322253cd67310899b546eccc25821c25cbc047a1a984633')
+            'ce7ccf6dd3a492cab322253cd67310899b546eccc25821c25cbc047a1a984633'
+            'SKIP')
 validpgpkeys=('462225C3B46F34879FC8496CD605848ED7E69871'  # Daiki Ueno
               '9001B85AF9E1B83DF1BDA942F5BE8B267C6A406D') # Bruno Haible
 
@@ -70,12 +72,18 @@ prepare() {
   apply_patch_with_msg \
     0024-disable-gnu-format.patch
 
+  apply_patch_with_msg \
+    9999-workarounds.patch
+
   libtoolize --automake --copy --force
   WANT_AUTOMAKE=latest ./autogen.sh --skip-gnulib
 }
 
 _build() {
   _config_opt=$1
+
+  CFLAGS+=" -I${MINGW_PREFIX}/include"
+  LDFLAGS+=" -liconv -L${MINGW_PREFIX}/lib"
 
   # gl_cv_func_mkdir_trailing_dot_works=yes was added to avoid having two
   # incompatible declarations of mkdir in the same compilation unit.
