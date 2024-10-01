@@ -39,11 +39,11 @@ build() {
     --enable-shared \
     --enable-static
 
-  make
+  make -j$(nproc)
 }
 
 package() {
   cd build-${MINGW_CHOST}
-  make DESTDIR="${pkgdir}" install
+  make -j$(nproc) DESTDIR="${pkgdir}" install
   install -D -m644 "${srcdir}/systre-${pkgver}/COPYING" "${pkgdir}${MINGW_PREFIX}/share/licenses/${_realname}/LICENSE"
 }

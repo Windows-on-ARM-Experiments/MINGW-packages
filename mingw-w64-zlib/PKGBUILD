@@ -65,12 +65,12 @@ build() {
     --prefix=${MINGW_PREFIX} \
     --shared
 
-  make
+  make -j$(nproc)
 }
 
 check() {
   cd "${srcdir}/build-${MSYSTEM}"
-  make test
+  make -j$(nproc) test
 }
 
 package() {
@@ -78,7 +78,7 @@ package() {
 
   cd "${srcdir}/build-${MSYSTEM}"
 
-  make DESTDIR="${pkgdir}" install
+  make -j$(nproc) DESTDIR="${pkgdir}" install
 
   install -Dm644 "${srcdir}/${_realname}-${pkgver}/LICENSE" "${pkgdir}${MINGW_PREFIX}/share/licenses/${_realname}/LICENSE"
 }

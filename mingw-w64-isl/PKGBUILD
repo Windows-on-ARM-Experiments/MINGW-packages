@@ -38,15 +38,15 @@ build() {
     --enable-shared \
     --with-gmp-prefix=${MINGW_PREFIX}
 
-  make
+  make -j$(nproc)
 }
 
 check() {
   cd "${srcdir}/build-${MSYSTEM}"
-  make check
+  make -j$(nproc) check
 }
 
 package() {
   cd "${srcdir}/build-${MSYSTEM}"
-  make DESTDIR="${pkgdir}" install
+  make -j$(nproc) DESTDIR="${pkgdir}" install
 }

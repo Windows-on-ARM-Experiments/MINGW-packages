@@ -72,12 +72,12 @@ build() {
     --enable-silent-rules \
     --enable-nls
 
-  make
+  make -j$(nproc)
 }
 
 check() {
   cd "${srcdir}/build-${MSYSTEM}"
-  make check || msg2 "tests failed"
+  make -j$(nproc) check || msg2 "tests failed"
 }
 
 package_libiconv() {
@@ -85,7 +85,7 @@ package_libiconv() {
   license=('spdx:LGPL-2.1-or-later' documentation:'spdx:GPL-3.0-or-later') # This is LGPL except for documentation, see README
 
   cd "${srcdir}/build-${MSYSTEM}"
-  make install DESTDIR="${pkgdir}"
+  make -j$(nproc) install DESTDIR="${pkgdir}"
   rm -fr "${pkgdir}${MINGW_PREFIX}"/bin/*.exe
   rm -f  "${pkgdir}${MINGW_PREFIX}"/lib/charset.alias
   rm -fr "${pkgdir}${MINGW_PREFIX}"/share/locale
@@ -112,7 +112,7 @@ package_iconv() {
   license=('spdx:GPL-3.0-or-later')
 
   cd "${srcdir}/build-${MSYSTEM}"
-  make install DESTDIR="${pkgdir}"
+  make -j$(nproc) install DESTDIR="${pkgdir}"
   rm -f  "${pkgdir}${MINGW_PREFIX}"/bin/*.dll
   rm -fr "${pkgdir}${MINGW_PREFIX}"/include
   rm -fr "${pkgdir}${MINGW_PREFIX}"/lib
