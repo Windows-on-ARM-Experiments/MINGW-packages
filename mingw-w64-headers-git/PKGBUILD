@@ -62,7 +62,7 @@ build() {
 
 package() {
   cd ${srcdir}/headers-${MSYSTEM}
-  make DESTDIR=${pkgdir} install
+  make -j$(nproc) DESTDIR=${pkgdir} install
 
   rm ${pkgdir}${MINGW_PREFIX}/include/pthread_signal.h
   rm ${pkgdir}${MINGW_PREFIX}/include/pthread_time.h

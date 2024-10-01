@@ -367,18 +367,18 @@ package_gcc-libs() {
 
   cd "${srcdir}"/build-${MSYSTEM}
 
-  make -C $CHOST/libgcc DESTDIR="${pkgdir}" install-shared
+  make -j$(nproc) -C $CHOST/libgcc DESTDIR="${pkgdir}" install-shared
   install -dm755 "${pkgdir}"${MINGW_PREFIX}/bin
   mv "${pkgdir}"/libgcc_*.dll "${pkgdir}"${MINGW_PREFIX}/bin/
 
   # libitm* and libvtv* are disbled until fixed
   for lib in libatomic libgomp libquadmath libstdc++-v3/src; do
-    make -C $CHOST/$lib DESTDIR="${pkgdir}" install-toolexeclibLTLIBRARIES
+    make -j$(nproc) -C $CHOST/$lib DESTDIR="${pkgdir}" install-toolexeclibLTLIBRARIES
   done
 
   rm -r "${pkgdir}"${MINGW_PREFIX}/lib
 
-  make -C $CHOST/libstdc++-v3/po DESTDIR="${pkgdir}" install
+  make -j$(nproc) -C $CHOST/libstdc++-v3/po DESTDIR="${pkgdir}" install
 
   # We explain the licensing in this generated README file
   mkdir -p "${pkgdir}"${MINGW_PREFIX}/share/licenses/${_realname}-libs
@@ -420,27 +420,27 @@ package_gcc() {
 
   cd "${srcdir}"/build-${MSYSTEM}
 
-  make -C gcc DESTDIR="${pkgdir}" install-driver install-cpp install-gcc-ar \
+  make -j$(nproc) -C gcc DESTDIR="${pkgdir}" install-driver install-cpp install-gcc-ar \
     c++.install-common install-headers install-plugin install-lto-wrapper
 
-  make -C c++tools DESTDIR="${pkgdir}" install
+  make -j$(nproc) -C c++tools DESTDIR="${pkgdir}" install
 
   install -m755 -t "${pkgdir}"${MINGW_PREFIX}/bin/ gcc/gcov{,-tool}.exe
   install -m755 -t "${pkgdir}"${MINGW_PREFIX}/${_libdir}/ \
     gcc/{cc1,cc1plus,collect2,lto1}.exe
 
-  make -C $CHOST/libgcc DESTDIR="${pkgdir}" install
+  make -j$(nproc) -C $CHOST/libgcc DESTDIR="${pkgdir}" install
   rm "${pkgdir}"/libgcc_*.dll
 
-  make -C $CHOST/libstdc++-v3/src DESTDIR="${pkgdir}" install
-  make -C $CHOST/libstdc++-v3/include DESTDIR="${pkgdir}" install
-  make -C $CHOST/libstdc++-v3/libsupc++ DESTDIR="${pkgdir}" install
-  make -C $CHOST/libstdc++-v3/python DESTDIR="${pkgdir}" install
-  make DESTDIR="${pkgdir}" install-libcc1
+  make -j$(nproc) -C $CHOST/libstdc++-v3/src DESTDIR="${pkgdir}" install
+  make -j$(nproc) -C $CHOST/libstdc++-v3/include DESTDIR="${pkgdir}" install
+  make -j$(nproc) -C $CHOST/libstdc++-v3/libsupc++ DESTDIR="${pkgdir}" install
+  make -j$(nproc) -C $CHOST/libstdc++-v3/python DESTDIR="${pkgdir}" install
+  make -j$(nproc) DESTDIR="${pkgdir}" install-libcc1
   rm "${pkgdir}"${MINGW_PREFIX}/bin/libstdc++*.dll
 
   for lib in libatomic libgomp libquadmath; do
-    make -C $CHOST/$lib DESTDIR="${pkgdir}" install
+    make -j$(nproc) -C $CHOST/$lib DESTDIR="${pkgdir}" install
     # TODO: aarch64 do not compile libquadmath because of missing float128 support.
     rm -rf "${pkgdir}"${MINGW_PREFIX}/bin/${lib}*.dll
   done
@@ -451,17 +451,17 @@ package_gcc() {
   # mv "${pkgdir}"${MINGW_PREFIX}/lib/libstdc++.dll.a-gdb.py \
   #   "${pkgdir}"${MINGW_PREFIX}/share/gdb/auto-load/usr/lib/
 
-  make DESTDIR="${pkgdir}" install-fixincludes
-  make -C gcc DESTDIR="${pkgdir}" install-mkheaders
+  make -j$(nproc) DESTDIR="${pkgdir}" install-fixincludes
+  make -j$(nproc) -C gcc DESTDIR="${pkgdir}" install-mkheaders
 
-  make -C lto-plugin DESTDIR="${pkgdir}" install
+  make -j$(nproc) -C lto-plugin DESTDIR="${pkgdir}" install
   install -dm755 "${pkgdir}"${MINGW_PREFIX}/lib/bfd-plugins/
   cp "${pkgdir}"${MINGW_PREFIX}/${_libdir}/liblto_plugin.dll "${pkgdir}"${MINGW_PREFIX}/lib/bfd-plugins/
 
-  make -C $CHOST/libgomp DESTDIR="${pkgdir}" install-nodist_{libsubinclude,toolexeclib}HEADERS
-  make -C $CHOST/libquadmath DESTDIR="${pkgdir}" install-nodist_libsubincludeHEADERS
+  make -j$(nproc) -C $CHOST/libgomp DESTDIR="${pkgdir}" install-nodist_{libsubinclude,toolexeclib}HEADERS
+  make -j$(nproc) -C $CHOST/libquadmath DESTDIR="${pkgdir}" install-nodist_libsubincludeHEADERS
 
-  make -C gcc DESTDIR="${pkgdir}" install-man install-info
+  make -j$(nproc) -C gcc DESTDIR="${pkgdir}" install-man install-info
   rm "${pkgdir}"${MINGW_PREFIX}/share/man/man1/{gfortran,lto-dump}.1
   # TODO: Why is this file missing?
   rm -f "${pkgdir}"${MINGW_PREFIX}/share/info/gfortran.info
@@ -472,10 +472,10 @@ package_gcc() {
     rm "${pkgdir}"${MINGW_PREFIX}/share/info/libgccjit.info
   fi
 
-  make -C libcpp DESTDIR="${pkgdir}" install
-  make -C gcc DESTDIR="${pkgdir}" install-po
+  make -j$(nproc) -C libcpp DESTDIR="${pkgdir}" install
+  make -j$(nproc) -C gcc DESTDIR="${pkgdir}" install-po
 
-  # make -C $CHOST/libstdc++-v3/doc DESTDIR="${pkgdir}" doc-install-man
+  # make -j$(nproc) -C $CHOST/libstdc++-v3/doc DESTDIR="${pkgdir}" doc-install-man
 
   cp "${pkgdir}"${MINGW_PREFIX}/bin/gcc.exe "${pkgdir}"${MINGW_PREFIX}/bin/cc.exe
   cp "${pkgdir}"${MINGW_PREFIX}/bin/gcc.exe "${pkgdir}"${MINGW_PREFIX}/bin/${CHOST}-cc.exe
@@ -495,7 +495,7 @@ package_gcc-libgfortran() {
   provides=("${MINGW_PACKAGE_PREFIX}-fc-libs")
 
   cd "${srcdir}"/build-${MSYSTEM}
-  make -C $CHOST/libgfortran DESTDIR="${pkgdir}" install-toolexeclibLTLIBRARIES
+  make -j$(nproc) -C $CHOST/libgfortran DESTDIR="${pkgdir}" install-toolexeclibLTLIBRARIES
   rm -r "${pkgdir}"${MINGW_PREFIX}/lib
 
   install -Dm644 "${srcdir}"/${_sourcedir}/COPYING.RUNTIME "${pkgdir}"${MINGW_PREFIX}/share/licenses/${_realname}-libgfortran/COPYING.RUNTIME
@@ -517,10 +517,10 @@ package_gcc-fortran() {
 
   cd "${srcdir}"/build-${MSYSTEM}
 
-  make -C $CHOST/libgfortran DESTDIR="${pkgdir}" install
+  make -j$(nproc) -C $CHOST/libgfortran DESTDIR="${pkgdir}" install
   rm "${pkgdir}"${MINGW_PREFIX}/bin/libgfortran*.dll
-  make -C $CHOST/libgomp DESTDIR="${pkgdir}" install-nodist_fincludeHEADERS
-  make -C gcc DESTDIR="${pkgdir}" fortran.install-{common,man,info}
+  make -j$(nproc) -C $CHOST/libgomp DESTDIR="${pkgdir}" install-nodist_fincludeHEADERS
+  make -j$(nproc) -C gcc DESTDIR="${pkgdir}" fortran.install-{common,man,info}
   install -Dm755 gcc/f951.exe "${pkgdir}"${MINGW_PREFIX}/${_libdir}/f951.exe
 }
 
@@ -538,7 +538,7 @@ package_gcc-ada() {
 
   cd "${srcdir}"/build-${MSYSTEM}
 
-  make -C gcc DESTDIR="${pkgdir}" ada.install-{common,info} install-gnatlib
+  make -j$(nproc) -C gcc DESTDIR="${pkgdir}" ada.install-{common,info} install-gnatlib
   mv "${pkgdir}"${MINGW_PREFIX}/${_libdir}/adalib/*.dll "${pkgdir}"${MINGW_PREFIX}/bin/
   install -m755 gcc/gnat1.exe "${pkgdir}"${MINGW_PREFIX}/${_libdir}
 }
@@ -557,8 +557,8 @@ package_gcc-objc() {
 
   cd "${srcdir}"/build-${MSYSTEM}
 
-  make -C $CHOST/libobjc DESTDIR="${pkgdir}" install-libs
-  make -C $CHOST/libobjc DESTDIR="${pkgdir}" install-headers
+  make -j$(nproc) -C $CHOST/libobjc DESTDIR="${pkgdir}" install-libs
+  make -j$(nproc) -C $CHOST/libobjc DESTDIR="${pkgdir}" install-headers
   install -dm755 "${pkgdir}"${MINGW_PREFIX}/${_libdir}
   install -m755 gcc/cc1obj{,plus}.exe "${pkgdir}"${MINGW_PREFIX}/${_libdir}/
 
@@ -579,7 +579,7 @@ package_gcc-rust() {
 
   cd "${srcdir}"/build-${MSYSTEM}
 
-  make -C gcc DESTDIR="${pkgdir}" rust.install-{common,man,info}
+  make -j$(nproc) -C gcc DESTDIR="${pkgdir}" rust.install-{common,man,info}
   install -Dm755 gcc/crab1.exe "${pkgdir}"${MINGW_PREFIX}/${_libdir}/crab1.exe
 }
 
@@ -597,7 +597,7 @@ package_gcc-lto-dump() {
 
   cd "${srcdir}"/build-${MSYSTEM}
 
-  make -C gcc DESTDIR="${pkgdir}" lto.install-{common,man,info}
+  make -j$(nproc) -C gcc DESTDIR="${pkgdir}" lto.install-{common,man,info}
 }
 
 package_libgccjit() {
@@ -614,7 +614,7 @@ package_libgccjit() {
 
   cd "${srcdir}"/build-${MSYSTEM}
 
-  make -C gcc DESTDIR="${pkgdir}" jit.install-common jit.install-info
+  make -j$(nproc) -C gcc DESTDIR="${pkgdir}" jit.install-common jit.install-info
 }
 
 # template start; name=mingw-w64-splitpkg-wrappers; version=1.0;

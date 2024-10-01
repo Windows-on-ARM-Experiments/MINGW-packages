@@ -53,17 +53,17 @@ build() {
     --target=${MINGW_CHOST} \
     --enable-shared
 
-  make all-dll-shared
+  make -j$(nproc) all-dll-shared
 }
 
 check() {
   cd "${srcdir}/build-${CARCH}"
-  make -k check
+  make -j$(nproc) -k check
 }
 
 package() {
   cd "${srcdir}/build-${CARCH}"
-  make DESTDIR="${pkgdir}" install
+  make -j$(nproc) DESTDIR="${pkgdir}" install
   # rm "${pkgdir}${MINGW_PREFIX}/bin/bz"{diff,grep,more}
   install -Dm644 "${srcdir}/${_realname}-${pkgver}/LICENSE" "${pkgdir}${MINGW_PREFIX}/share/licenses/${_realname}/LICENSE"
 }

@@ -76,7 +76,7 @@ build() {
     sed -i 's,striplib=.*$,striplib=true,g'               libtool
   fi
 
-  make
+  make -j$(nproc)
 }
 
 _install_licenses() {
@@ -90,7 +90,7 @@ package_winpthreads-git() {
   conflicts=("${MINGW_PACKAGE_PREFIX}-${_realname}")
 
   cd ${srcdir}/build-${MSYSTEM}
-  make DESTDIR=${pkgdir} install
+  make -j$(nproc) DESTDIR=${pkgdir} install
 
   rm -rf ${pkgdir}${MINGW_PREFIX}/bin
 
@@ -102,7 +102,7 @@ package_libwinpthread-git() {
   conflicts=("${MINGW_PACKAGE_PREFIX}-libwinpthread")
 
   cd ${srcdir}/build-${MSYSTEM}
-  make DESTDIR=${pkgdir} install
+  make -j$(nproc) DESTDIR=${pkgdir} install
 
   rm -rf ${pkgdir}${MINGW_PREFIX}/include
   rm -rf ${pkgdir}${MINGW_PREFIX}/lib

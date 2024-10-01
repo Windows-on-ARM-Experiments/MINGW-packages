@@ -79,12 +79,12 @@ build() {
     --enable-pc-files \
     --with-pkg-config-libdir=${MINGW_PREFIX}/lib/pkgconfig
 
-  make
+  make -j$(nproc)
 }
 
 package() {
   cd ${srcdir}/build-${MSYSTEM}
-  make DESTDIR=${pkgdir} install
+  make -j$(nproc) DESTDIR=${pkgdir} install
   cp -r ${pkgdir}${MINGW_PREFIX}/include/ncursesw ${pkgdir}${MINGW_PREFIX}/include/ncurses
   cp ${pkgdir}${MINGW_PREFIX}/lib/libncursesw.a ${pkgdir}${MINGW_PREFIX}/lib/libncurses.a
 

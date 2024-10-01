@@ -136,7 +136,7 @@ build() {
     --with-system-zlib \
     "${extra_config[@]}"
 
-  make
+  make -j$(nproc)
 }
 
 check() {
@@ -144,12 +144,12 @@ check() {
 
   # unset LDFLAGS as testsuite makes assumptions about which ones are active
   # do not abort on errors - manually check log files
-  make LDFLAGS="" -k check || true
+  make -j$(nproc) LDFLAGS="" -k check || true
 }
 
 package() {
   cd ${srcdir}/build-${MSYSTEM}
-  make DESTDIR=${pkgdir} install
+  make -j$(nproc) DESTDIR=${pkgdir} install
 
   install -Dm644 "${srcdir}/${_realname}/COPYING"* -t "${pkgdir}${MINGW_PREFIX}/share/licenses/${_realname}"
 

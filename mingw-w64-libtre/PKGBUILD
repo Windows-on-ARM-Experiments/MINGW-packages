@@ -46,11 +46,11 @@ build() {
     --enable-static \
     --without-libintl-prefix
 
-  make
+  make -j$(nproc)
 }
 
 package() {
   cd build-${MINGW_CHOST}
-  make DESTDIR="${pkgdir}" install
+  make -j$(nproc) DESTDIR="${pkgdir}" install
   install -Dm644 "${srcdir}/${_realname}/LICENSE" "${pkgdir}${MINGW_PREFIX}/share/licenses/${_realname}/LICENSE"
 }
