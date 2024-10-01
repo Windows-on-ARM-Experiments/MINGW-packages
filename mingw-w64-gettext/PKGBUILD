@@ -112,7 +112,7 @@ _build() {
   # to make relocate() in gnulib-lib work
   sed -s "s|${MINGW_PREFIX}|$(cygpath -m ${MINGW_PREFIX})|g" -i gettext-tools/config.h
 
-  make
+  make -j$(nproc)
 }
 
 build() {
@@ -160,10 +160,10 @@ package_gettext-runtime() {
   conflicts=("${MINGW_PACKAGE_PREFIX}-gettext<=0.22.4-3")
 
   cd ${srcdir}/build-${MSYSTEM}-static/gettext-runtime
-  make DESTDIR="${pkgdir}" install
+  make -j$(nproc) DESTDIR="${pkgdir}" install
 
   cd ${srcdir}/build-${MSYSTEM}-shared/gettext-runtime
-  make DESTDIR="${pkgdir}" install
+  make -j$(nproc) DESTDIR="${pkgdir}" install
 
   # Licenses
   install -Dm644 "${srcdir}/${_realname}-${pkgver}/gettext-runtime/COPYING" \
@@ -188,10 +188,10 @@ package_gettext-tools() {
   replaces=("${MINGW_PACKAGE_PREFIX}-gettext")
 
   cd ${srcdir}/build-${MSYSTEM}-static/gettext-tools
-  make DESTDIR="${pkgdir}" install
+  make -j$(nproc) DESTDIR="${pkgdir}" install
 
   cd ${srcdir}/build-${MSYSTEM}-shared/gettext-tools
-  make DESTDIR="${pkgdir}" install
+  make -j$(nproc) DESTDIR="${pkgdir}" install
 
   # Licenses
   install -Dm644 "${srcdir}/${_realname}-${pkgver}/gettext-tools/COPYING" \
