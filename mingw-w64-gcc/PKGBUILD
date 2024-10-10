@@ -188,6 +188,7 @@ build() {
   case ${CARCH} in
     i686)
       _extra_config+=(
+        $([ "$BOOTSTRAP" == "0" ] && echo "--disable-bootstrap" || echo "--enable-bootstrap")
         "--disable-sjlj-exceptions"
         "--with-dwarf2"
       )
@@ -195,13 +196,17 @@ build() {
       local _arch=pentium4
       ;;
     x86_64)
+      # CHANGED: --enable-plugin to --disable-plugin
       _extra_config+=(
-        "--enable-plugin"
+        $([ "$BOOTSTRAP" == "0" ] && echo "--disable-bootstrap" || echo "--enable-bootstrap")
+        "--disable-plugin"
       )
       local _arch=nocona
       ;;
     aarch64)
+      # CHANGED: --enable-plugin to --disable-plugin
       _extra_config+=(
+        $([ "$BOOTSTRAP" == "1" ] && echo "--enable-bootstrap" || echo "--disable-bootstrap")
         "--disable-plugin"
         "--enable-host-pie"
       )
@@ -253,7 +258,6 @@ build() {
     --target=${MINGW_CHOST} \
     --with-native-system-header-dir=${MINGW_PREFIX}/include \
     --libexecdir=${MINGW_PREFIX}/lib \
-    --enable-bootstrap \
     --enable-checking=release \
     --with-arch=${_arch} \
     --with-tune=generic \
@@ -306,7 +310,7 @@ build() {
   make -j$(nproc) -O BOOT_CFLAGS="$BOOT_CFLAGS" \
     STAGE1_CFLAGS="$STAGE1_CFLAGS" \
     CFLAGS_FOR_TARGET="$CFLAGS_FOR_TARGET" \
-    profiledbootstrap
+    $([ "$BOOTSTRAP" == "1" ] && echo "profiledbootstrap" || echo "")
 }
 
 check() {
