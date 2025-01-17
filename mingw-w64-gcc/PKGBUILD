@@ -84,7 +84,7 @@ makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
              "git")
 checkdepends=('dejagnu' 'autogen')
 options=('!emptydirs' '!strip' 'debug')
-source=("${_realname}"::"git+https://github.com/Windows-on-ARM-Experiments/gcc-woarm64.git#branch=woarm64"
+source=("${_realname}"::"git+https://github.com/Windows-on-ARM-Experiments/gcc-woarm64.git#branch=fix-va-list"
         "gdbinit"
         0003-Windows-Follow-Posix-dir-exists-semantics-more-close.patch
         0005-Windows-Don-t-ignore-native-system-header-dir.patch
