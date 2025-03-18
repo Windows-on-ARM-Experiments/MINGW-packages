@@ -63,15 +63,15 @@ msys2_references=(
   "cpe: cpe:/a:gnu:gcc"
 )
 license=('spdx:GPL-3.0-or-later')
-makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
+makedepends=("${MINGW_PACKAGE_PREFIX}-${_realname}"
              $([[ "$_enable_ada" == "yes" ]] && echo "${MINGW_PACKAGE_PREFIX}-${_realname}-ada")
              $([[ "$_enable_rust" == "yes" ]] && echo "${MINGW_PACKAGE_PREFIX}-rust")
-             "mingw-w64-x86_64-autotools"
+             "${MINGW_PACKAGE_PREFIX}-autotools"
              "${MINGW_PACKAGE_PREFIX}-binutils"
              "${MINGW_PACKAGE_PREFIX}-crt"
              "${MINGW_PACKAGE_PREFIX}-headers"
              "${MINGW_PACKAGE_PREFIX}-gmp"
-             "mingw-w64-x86_64-gperf"
+             "${MINGW_PACKAGE_PREFIX}-gperf"
              "${MINGW_PACKAGE_PREFIX}-isl"
              "${MINGW_PACKAGE_PREFIX}-libiconv"
              "${MINGW_PACKAGE_PREFIX}-mpc"

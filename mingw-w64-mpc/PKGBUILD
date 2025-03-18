@@ -16,7 +16,7 @@ msys2_references=(
 depends=("${MINGW_PACKAGE_PREFIX}-gmp"
          "${MINGW_PACKAGE_PREFIX}-mpfr")
 makedepends=(
-  "mingw-w64-x86_64-autotools"
+  "${MINGW_PACKAGE_PREFIX}-autotools"
   "${MINGW_PACKAGE_PREFIX}-cc"
 )
 source=(https://ftp.gnu.org/gnu/mpc/${_realname}-${pkgver}.tar.gz{,.sig})

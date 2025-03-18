@@ -17,7 +17,7 @@ license=('spdx:BSD-3-Clause OR GPL-2.0-or-later')
 depends=("${MINGW_PACKAGE_PREFIX}-gcc-libs")
 makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
              "mingw-w64-x86_64-cmake"
-             "mingw-w64-x86_64-ninja")
+             "${MINGW_PACKAGE_PREFIX}-ninja")
 source=("https://github.com/facebook/zstd/releases/download/v${pkgver}/${_realname}-${pkgver}.tar.gz"{,.sig}
         zstd-1.4.0-fileio-mingw.patch)
 sha256sums=('eb33e51f49a15e023950cd7825ca74a4a2b43db8354825ac24fc1b7ee09e6fa3'
@@ -42,7 +42,6 @@ build() {
     extra_config+=("-DCMAKE_BUILD_TYPE=Debug")
   fi
 
-  PATH="/mingw64/bin:$PATH" \
   MSYS2_ARG_CONV_EXCL="-DCMAKE_INSTALL_PREFIX=" \
     /mingw64/bin/cmake \
       -GNinja \

@@ -13,8 +13,8 @@ url="https://www.mingw-w64.org/"
 msys2_repository_url="https://sourceforge.net/p/mingw-w64/mingw-w64/ci/master/tree/mingw-w64-headers/"
 license=('spdx:ZPL-2.1 AND LGPL-2.1-or-later')
 groups=("${MINGW_PACKAGE_PREFIX}-toolchain")
-makedepends=("mingw-w64-x86_64-tools"
-             "mingw-w64-x86_64-autotools"
+makedepends=("${MINGW_PACKAGE_PREFIX}-tools"
+             "${MINGW_PACKAGE_PREFIX}-autotools"
              'git')
 provides=("${MINGW_PACKAGE_PREFIX}-${_realname}")
 conflicts=("${MINGW_PACKAGE_PREFIX}-${_realname}")
