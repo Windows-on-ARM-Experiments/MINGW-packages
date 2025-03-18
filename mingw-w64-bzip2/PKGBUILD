@@ -15,7 +15,7 @@ msys2_references=(
 )
 license=("custom")
 depends=("${MINGW_PACKAGE_PREFIX}-gcc-libs")
-makedepends=("${MINGW_PACKAGE_PREFIX}-cc" "mingw-w64-x86_64-autotools")
+makedepends=("${MINGW_PACKAGE_PREFIX}-cc" "${MINGW_PACKAGE_PREFIX}-autotools")
 source=("https://sourceware.org/pub/bzip2/bzip2-${pkgver}.tar.gz"
         "bzip2-cygming-1.0.6.src.all.patch"
         "bzip2-buildsystem.all.patch"
@@ -39,7 +39,7 @@ prepare() {
   patch -p1 -i "$srcdir/"bzip2-buildsystem.all.patch
   patch -p1 -i "$srcdir/"bzip2-1.0.6-progress.all.patch
 
-  PATH="/mingw64/bin:$PATH" autoreconf -fi -I /mingw64/share/aclocal
+  autoreconf -fi
 }
 
 build() {

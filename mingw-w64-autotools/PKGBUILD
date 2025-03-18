@@ -17,9 +17,9 @@ depends=(
   'autoconf-wrapper'
   'automake-wrapper'
   'make'
-  "mingw-w64-x86_64-libtool"
+  "${MINGW_PACKAGE_PREFIX}-libtool"
   "${MINGW_PACKAGE_PREFIX}-gettext-tools"
-  "mingw-w64-x86_64-pkgconf"
+  "${MINGW_PACKAGE_PREFIX}-pkgconf"
 )
 source=(README.md)
 sha256sums=('de6ec37dee4875be8e2759dea340f6c1bbdc04457333dc666dcb81b00962a145')

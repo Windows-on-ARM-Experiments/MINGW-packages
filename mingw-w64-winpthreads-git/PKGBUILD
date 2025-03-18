@@ -20,7 +20,7 @@ mingw_arch=('mingw32' 'mingw64' 'mingwarm64' 'ucrt64' 'clang64' 'clangarm64')
 groups=("${MINGW_PACKAGE_PREFIX}-toolchain")
 makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
              "${MINGW_PACKAGE_PREFIX}-binutils"
-             "mingw-w64-x86_64-autotools"
+             "${MINGW_PACKAGE_PREFIX}-autotools"
              "${MINGW_PACKAGE_PREFIX}-crt-git"
              "${MINGW_PACKAGE_PREFIX}-headers-git"
              "git")
@@ -44,7 +44,7 @@ prepare() {
   patch -p1 -i ${srcdir}/9998-add-mno-outline-atomics.patch
 
   cd "${srcdir}"/mingw-w64/mingw-w64-libraries/winpthreads
-  PATH="/mingw64/bin:$PATH" autoreconf -vfi -I /mingw64/share/aclocal
+  autoreconf -vfi
 }
 
 build() {

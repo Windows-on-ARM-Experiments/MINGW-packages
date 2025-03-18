@@ -17,7 +17,7 @@ index 860c6a09..e37abbb1 100644
      # Keep the egrep pattern in sync with the one in _LT_CHECK_MAGIC_METHOD.
      if eval $OBJDUMP -f $1 | $SED -e '10q' 2>/dev/null |
 -       $EGREP 'file format (pei*-i386(.*architecture: i386)?|pe-arm-wince|pe-x86-64|pe-aarch64)' >/dev/null; then
-+       $EGREP 'file format (pei*-i386(.*architecture: i386)?|pe-arm-wince|pe-x86-64|pe-aarch64|coff-arm|coff-arm64|coff-i386|coff-x86-64)' >/dev/null; then
++       $EGREP 'file format (pei*-i386(.*architecture: i386)?|pe-arm-wince|pe-x86-64|pe-aarch64|pei-aarch64-little|coff-arm|coff-arm64|coff-i386|coff-x86-64)' >/dev/null; then
        case $nm_interface in
        "MS dumpbin")
  	if func_cygming_ms_implib_p "$1" ||
@@ -30,7 +30,7 @@ index 2457eec5..8cd75666 100644
    else
      # Keep this pattern in sync with the one in func_win32_libid.
 -    lt_cv_deplibs_check_method='file_magic file format (pei*-i386(.*architecture: i386)?|pe-arm-wince|pe-x86-64|pe-aarch64)'
-+    lt_cv_deplibs_check_method='file_magic file format (pei*-i386(.*architecture: i386)?|pe-arm-wince|pe-x86-64|pe-aarch64|coff-arm|coff-arm64|coff-i386|coff-x86-64)'
++    lt_cv_deplibs_check_method='file_magic file format (pei*-i386(.*architecture: i386)?|pe-arm-wince|pe-x86-64|pe-aarch64|pei-aarch64-little|coff-arm|coff-arm64|coff-i386|coff-x86-64)'
      lt_cv_file_magic_cmd='$OBJDUMP -f'
    fi
    ;;

@@ -18,7 +18,7 @@ msys2_references=(
 # GPL3 for the package as a whole and LGPL for some parts, see the license files
 license=('spdx:GPL-3.0-or-later AND LGPL-2.1-or-later')
 makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
-             "mingw-w64-x86_64-autotools"
+             "${MINGW_PACKAGE_PREFIX}-autotools"
              "${MINGW_PACKAGE_PREFIX}-ncurses"
              "${MINGW_PACKAGE_PREFIX}-libiconv"
              "groff")
@@ -71,7 +71,7 @@ prepare() {
   apply_patch_with_msg \
     9999-workarounds.patch
 
-  /mingw64/bin/libtoolize --automake --copy --force
+  libtoolize --automake --copy --force
   WANT_AUTOMAKE=latest ./autogen.sh --skip-gnulib
 }
 

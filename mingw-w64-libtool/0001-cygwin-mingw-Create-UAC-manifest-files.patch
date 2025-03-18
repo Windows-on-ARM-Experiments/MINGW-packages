@@ -15,7 +15,7 @@ diff --git a/build-aux/ltmain.in b/build-aux/ltmain.in
 index 68aca605..8e6bf480 100644
 --- a/build-aux/ltmain.in
 +++ b/build-aux/ltmain.in
-@@ -4572,6 +4572,41 @@ EOF
+@@ -4572,6 +4572,42 @@ EOF
  }
  # end: func_emit_cwrapperexe_src
  
@@ -32,10 +32,11 @@ index 68aca605..8e6bf480 100644
 +EOF
 +
 +    case $host in
-+    i?86-*-* )   echo '     processorArchitecture="x86"' ;;
-+    ia64-*-* )   echo '     processorArchitecture="ia64"' ;;
-+    x86_64-*-* ) echo '     processorArchitecture="amd64"' ;;
-+    *)           echo '     processorArchitecture="*"' ;;
++    aarch64-*-* ) echo '     processorArchitecture="arm64"' ;;
++    i?86-*-* )    echo '     processorArchitecture="x86"' ;;
++    ia64-*-* )    echo '     processorArchitecture="ia64"' ;;
++    x86_64-*-* )  echo '     processorArchitecture="amd64"' ;;
++    *)            echo '     processorArchitecture="*"' ;;
 +    esac
 +
 +    cat <<EOF

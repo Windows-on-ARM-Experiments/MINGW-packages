@@ -20,7 +20,7 @@ depends=("${MINGW_PACKAGE_PREFIX}-gcc-libs"
          "${MINGW_PACKAGE_PREFIX}-gettext-runtime"
          "${MINGW_PACKAGE_PREFIX}-libsystre")
 makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
-             "mingw-w64-x86_64-autotools")
+             "${MINGW_PACKAGE_PREFIX}-autotools")
 source=("https://invisible-mirror.net/archives/ncurses/current/${_realname}-${_base_ver}-${_date_rev}.tgz"{,.asc}
         002-ncurses-config-win-paths.patch
         ncurses-6.3-cflags-private.patch

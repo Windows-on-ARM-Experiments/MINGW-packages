@@ -15,13 +15,13 @@ url=""
 license=('BSD')
 depends=("${MINGW_PACKAGE_PREFIX}-libtre")
 makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
-             "mingw-w64-x86_64-autotools")
+             "${MINGW_PACKAGE_PREFIX}-autotools")
 source=(systre-${pkgver}.tar.xz)
 sha256sums=('909a058a01f3df3af3f030342a7283032b8b240c0fd66f22af80eee674fd39a2')
 
 prepare() {
   cd systre-${pkgver}
-  PATH="/mingw64/bin:$PATH" autoreconf -fiv -I /mingw64/share/aclocal
+  autoreconf -fiv
 }
 
 build() {

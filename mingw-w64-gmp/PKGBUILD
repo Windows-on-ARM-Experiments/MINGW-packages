@@ -13,7 +13,7 @@ msys2_references=(
   "cpe: cpe:/a:gmplib:gmp"
 )
 license=('LGPL3' 'GPL')
-makedepends=("mingw-w64-x86_64-autotools" "${MINGW_PACKAGE_PREFIX}-cc")
+makedepends=("${MINGW_PACKAGE_PREFIX}-autotools" "${MINGW_PACKAGE_PREFIX}-cc")
 source=(https://ftp.gnu.org/gnu/gmp/${_realname}-${pkgver}.tar.xz{,.sig}
         do-not-use-dllimport.diff
         gmp-staticlib.diff
@@ -33,7 +33,7 @@ prepare() {
   patch -p2 -i "${srcdir}"/do-not-use-dllimport.diff
   patch -p1 -i "${srcdir}"/gmp-staticlib.diff
   patch -p1 -i "${srcdir}"/9999-workarounds.patch
-  PATH="/mingw64/bin:$PATH" autoreconf -vfi -I /mingw64/share/aclocal
+  autoreconf -vfi
   cp -f ../stash/config.{guess,sub} .
 }
 
