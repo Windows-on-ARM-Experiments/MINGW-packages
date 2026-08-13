@@ -18,7 +18,7 @@ jobs:
           msystem: CLANGARM64
           install: base-devel dos2unix
           update: true
-          release: false
+          release: true
 
       - name: Build and run upstream tests
         shell: msys2 {0}
