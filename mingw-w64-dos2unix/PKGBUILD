@@ -22,7 +22,7 @@ sha256sums=('63650acbd0c7fa8623429bcbf93a888e3351a1cad0f556cf41876f5673dd7d0b'
 
 _make() {
   local d2u_os=mingw64
-  [[ "${MSYSTEM}" == "MINGW32" ]] && d2u_os=mingw32
+  [[ "${MINGW_CHOST}" == i686-* ]] && d2u_os=mingw32
 
   make \
     D2U_OS="${d2u_os}" \
@@ -46,7 +46,7 @@ build() {
 
 check() {
   cd "${srcdir}/${_realname}-${pkgver}"
-  _make test
+  MSYSTEM=MINGW _make test
 }
 
 package() {
