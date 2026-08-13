@@ -48,7 +48,7 @@ source=("https://www.cpan.org/src/5.0/${_realname}-${pkgver}.tar.xz"
         "015-noreturn.patch"
         "017-arm64.patch"
         "018-copy-clang-runtime.patch"
-        "019-mingw-memory-alignment.patch")
+        "019-pack-size-overflow.patch")
 sha256sums=('d91115e90b896520e83d4de6b52f8254ef2b70a8d545ffab33200ea9f1cf29e8'
             'a98fc21fb079a9b31194292191ea8be1590b97be16b57cc25c3cf73a5d2bd25e'
             'ec41f5054fcc61cd3f0942dc42fe24fcca50a9ff13cb42003b119e221a207d40'
@@ -67,7 +67,7 @@ sha256sums=('d91115e90b896520e83d4de6b52f8254ef2b70a8d545ffab33200ea9f1cf29e8'
             '749e96f97a162c53f4cf7bda83d1b18f4d3e587e7980e07f5e8968943d6ea774'
             '7861675f02698537f3ea99230b0d95ba9581253df258ebb81a528a3861b485ce'
             'b6fbca2f89ee4bae4f28321759c76078f1d1de574d9bceb7eae033ca3d3626c0'
-            '4221b8ecb513b264f6bd9459c3f95dfb5f92ca023aaf26691ecaed0e8b8c8a15')
+            '4e90efbf8811b334cf379cdf924100c3b39fa61000d7c0c9eb85ac8282d7fdd6')
 ## Populated by the updpkgprovs script
 provides=(
     "${MINGW_PACKAGE_PREFIX}-perl-amiga-arexx=0.60.0"
@@ -748,7 +748,7 @@ prepare() {
         015-noreturn.patch \
         017-arm64.patch \
         018-copy-clang-runtime.patch \
-        019-mingw-memory-alignment.patch
+        019-pack-size-overflow.patch
 
     if [[ ${MINGW_PACKAGE_PREFIX} == *-clang-* ]] || [[ ${MINGW_PACKAGE_PREFIX} == *-ucrt-* ]]; then
         apply_patch_with_msg \
