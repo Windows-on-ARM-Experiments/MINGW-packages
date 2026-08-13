@@ -67,7 +67,7 @@ sha256sums=('d91115e90b896520e83d4de6b52f8254ef2b70a8d545ffab33200ea9f1cf29e8'
             '749e96f97a162c53f4cf7bda83d1b18f4d3e587e7980e07f5e8968943d6ea774'
             '7861675f02698537f3ea99230b0d95ba9581253df258ebb81a528a3861b485ce'
             'b6fbca2f89ee4bae4f28321759c76078f1d1de574d9bceb7eae033ca3d3626c0'
-            '4e90efbf8811b334cf379cdf924100c3b39fa61000d7c0c9eb85ac8282d7fdd6')
+            'f3fd150bf49d466f95a2ed5de5862bd60c6b030e30ed4a7ed4e7a3358c6f4185')
 ## Populated by the updpkgprovs script
 provides=(
     "${MINGW_PACKAGE_PREFIX}-perl-amiga-arexx=0.60.0"
