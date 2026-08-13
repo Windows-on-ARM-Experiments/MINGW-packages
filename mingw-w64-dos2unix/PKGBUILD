@@ -18,7 +18,7 @@ makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
 source=("https://waterlander.net/${_realname}/files/${_realname}-${pkgver}.tar.gz"
         "0001-default-to-UTF-8-messages-in-MSYS-terminals.patch")
 sha256sums=('63650acbd0c7fa8623429bcbf93a888e3351a1cad0f556cf41876f5673dd7d0b'
-            'f09725a24e56be1b6fa983b42ef20b168cdc1f85f35afed977d5dd46e2ac608a')
+            '71e9ab5ac27d1e967246e37cd52b46ad38eae4cfdff6737a97184e3936268f7e')
 
 _make() {
   local d2u_os=mingw64

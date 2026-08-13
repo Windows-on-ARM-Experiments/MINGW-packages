@@ -1,4 +1,4 @@
-From 7e86707d89df78fc9b43c9b37ebfa5344f46b71d Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Clint Rutkas <crutkas@microsoft.com>
 Date: Thu, 13 Aug 2026 11:05:00 -0700
 Subject: [PATCH] Default to UTF-8 messages in MSYS terminals
@@ -12,7 +12,6 @@ redirected through an MSYS pseudo-terminal.
  1 file changed, 15 insertions(+), 1 deletion(-)
 
 diff --git a/common.c b/common.c
-index 3e90ce2..41680a8 100644
 --- a/common.c
 +++ b/common.c
 @@ -55,4 +55,4 @@
